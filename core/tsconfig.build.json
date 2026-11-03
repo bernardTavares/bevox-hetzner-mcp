@@ -1,0 +1,16 @@
+{
+  "//": "Task 7.1 — production build config. Extends the strict base but EMITS",
+  "//2": "src/ → dist/ (the base sets noEmit:true for typecheck and includes",
+  "//3": "test/). `npm --prefix core run build` compiles the runnable daemon;",
+  "//4": "`npm --prefix core run typecheck` (root tsconfig) is unchanged.",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": false,
+    "sourceMap": true
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts", "test"]
+}

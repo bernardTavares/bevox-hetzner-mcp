@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manifest — bevox-hetzner-mcp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html">Index</a>
+  <a href="overview.html">Overview</a>
+  <a href="entity-detail.html">Entity Detail</a>
+  <a href="plan-apply.html">Plan/Apply</a>
+  <a href="approvals.html">Approvals</a>
+  <a href="events.html">Events</a>
+  <a href="manifest.html" class="active">Manifest</a>
+  <a href="provision.html">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html">Backups</a>
+  <a href="network.html">Network</a>
+  <a href="dns.html">DNS</a>
+  <a href="health.html">Health</a>
+</nav>
+
+<main class="page">
+  <div class="page-title">Manifest — Estado Desejado</div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <a href="#" class="tab">git</a>
+    <a href="#" class="tab active">working *</a>
+  </div>
+
+  <!-- Warning -->
+  <div class="notice notice-warn" style="margin-bottom:16px;">
+    <span>⚠</span>
+    <span>
+      working diverge de git em <strong>2 entidades</strong> —
+      <a href="plan-apply.html">ver diff →</a>
+    </span>
+  </div>
+
+  <!-- YAML editor area -->
+  <textarea class="code-area" readonly rows="28">
+# bevox-hetzner-mcp — manifest (working)
+# editado por: vox  |  2026-05-17 13:45  |  diverge de git em 2 entidades
+
+servers:
+  - name: bevox-app-1
+    type: cx32
+    location: nbg1
+    image: ubuntu-24.04
+    ssh_keys: [bevox-ops]
+    networks: [bevox-priv]
+    labels:
+      app: harness
+
+  - name: bevox-app-2
+    type: cx32
+    location: nbg1
+    image: ubuntu-24.04
+    ssh_keys: [bevox-ops]
+    networks: [bevox-priv]
+    labels:
+      app: harness
+
+  - name: bevox-db-1
+    type: cx42
+    location: nbg1
+    image: ubuntu-24.04
+    ssh_keys: [bevox-ops]
+    networks: [bevox-priv]
+    volumes: [pg-data]
+
+services:
+  - name: bevox-harness
+    image: registry/bevox-harness:v12
+    replicas: 2
+    ports:
+      - "8080:80"
+    env_from:
+      - secret: bevox-harness
+    servers: [bevox-app-1, bevox-app-2]
+
+  - name: bevox-backend
+    image: registry/bevox-backend:v8   # working: v7→v8 (diverge de git)
+    replicas: 2                          # working: 1→2  (diverge de git)
+    ports:
+      - "3000:3000"
+    env_from:
+      - secret: bevox-backend
+    servers: [bevox-app-1, bevox-app-2]
+
+volumes:
+  - name: pg-data
+    size: 50Gi
+    server: bevox-db-1
+
+  - name: pg-data-2    # novo — não existe em git
+    size: 50Gi
+    server: bevox-db-1
+
+backups:
+  - volume: pg-data
+    schedule: "0 3 * * *"
+    retention: 14d
+    repo: restic:hetzner-backup
+  </textarea>
+
+  <!-- Actions -->
+  <div class="btn-group" style="margin-top:16px;">
+    <a href="#" class="btn btn-secondary">[Validar]</a>
+    <span style="display:inline-flex; align-items:center; gap:8px;">
+      <a href="approvals.html" class="btn btn-warn">[Promover working → git (approval)]</a>
+      <span class="approval-hint">→ Approval Gate</span>
+    </span>
+    <a href="plan-apply.html" class="btn btn-ghost btn-sm">Ver diff →</a>
+  </div>
+</main>
+
+</body>
+</html>

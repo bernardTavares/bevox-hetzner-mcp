@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events — bevox-hetzner-mcp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html">Index</a>
+  <a href="overview.html">Overview</a>
+  <a href="entity-detail.html">Entity Detail</a>
+  <a href="plan-apply.html">Plan/Apply</a>
+  <a href="approvals.html">Approvals</a>
+  <a href="events.html" class="active">Events</a>
+  <a href="manifest.html">Manifest</a>
+  <a href="provision.html">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html">Backups</a>
+  <a href="network.html">Network</a>
+  <a href="dns.html">DNS</a>
+  <a href="health.html">Health</a>
+</nav>
+
+<main class="page">
+  <div class="page-title">Events — Audit Trail</div>
+
+  <div class="notice notice-info">
+    <span>ℹ</span>
+    <span>Registro append-only. Nenhum evento pode ser editado ou removido. Todo StateEvent registra o agente ator.</span>
+  </div>
+
+  <!-- Filters (visual only) -->
+  <div class="filter-row">
+    <span style="font-size:12px; color:var(--muted);">Filtrar:</span>
+    <select class="filter-select">
+      <option>ator ▾</option>
+      <option>vox</option>
+      <option>runner-3</option>
+      <option>bernard</option>
+      <option>system</option>
+    </select>
+    <select class="filter-select">
+      <option>entidade ▾</option>
+      <option>service:bevox-harness</option>
+      <option>service:bevox-backend</option>
+      <option>server:bevox-db-old</option>
+      <option>server:bevox-x-9</option>
+    </select>
+    <select class="filter-select">
+      <option>result ▾</option>
+      <option>ok</option>
+      <option>error</option>
+      <option>reported</option>
+    </select>
+  </div>
+
+  <!-- Events table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Hora</th>
+          <th>Ator</th>
+          <th>Ação</th>
+          <th>Entidade</th>
+          <th>Detalhe</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; font-family:var(--font-mono);">2026-05-17 14:02</td>
+          <td><span class="event-actor" style="font-family:var(--font-mono); font-size:12px;">vox</span></td>
+          <td style="font-family:var(--font-mono); font-size:12px;">update</td>
+          <td style="font-family:var(--font-mono); font-size:12px;"><a href="entity-detail.html">service:bevox-harness</a></td>
+          <td style="font-family:var(--font-mono); font-size:12px; color:var(--muted);">v11 → v12 rolling restart</td>
+          <td><span class="badge badge-ok">ok</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; font-family:var(--font-mono);">2026-05-17 13:50</td>
+          <td><span style="font-family:var(--font-mono); font-size:12px; color:var(--applying);">runner-3</span></td>
+          <td style="font-family:var(--font-mono); font-size:12px;">deploy</td>
+          <td style="font-family:var(--font-mono); font-size:12px;"><a href="entity-detail.html">service:bevox-backend</a></td>
+          <td style="font-family:var(--font-mono); font-size:12px; color:var(--muted);">scale 1 → 2</td>
+          <td><span class="badge badge-ok">ok</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; font-family:var(--font-mono);">2026-05-17 13:31</td>
+          <td><span style="font-family:var(--font-mono); font-size:12px; color:var(--degraded);">bernard</span></td>
+          <td style="font-family:var(--font-mono); font-size:12px;">approve</td>
+          <td style="font-family:var(--font-mono); font-size:12px;">server:bevox-db-old</td>
+          <td style="font-family:var(--font-mono); font-size:12px; color:var(--muted);">destroy — aprovado</td>
+          <td><span class="badge badge-ok">ok</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; font-family:var(--font-mono);">2026-05-17 12:10</td>
+          <td><span style="font-family:var(--font-mono); font-size:12px; color:var(--muted);">system</span></td>
+          <td style="font-family:var(--font-mono); font-size:12px;">drift</td>
+          <td style="font-family:var(--font-mono); font-size:12px; color:var(--drift);">server:bevox-x-9</td>
+          <td style="font-family:var(--font-mono); font-size:12px; color:var(--drift);">detectado — reportado (não corrigido)</td>
+          <td><span class="badge badge-drift">reported</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:12px; font-size:12px; color:var(--muted); font-family:var(--font-mono);">
+    Exibindo 4 de 247 eventos  ·  ordenado por hora desc
+  </div>
+</main>
+
+</body>
+</html>

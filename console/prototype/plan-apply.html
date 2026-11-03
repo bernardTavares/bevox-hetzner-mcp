@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan / Apply — bevox-hetzner-mcp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html">Index</a>
+  <a href="overview.html">Overview</a>
+  <a href="entity-detail.html">Entity Detail</a>
+  <a href="plan-apply.html" class="active">Plan/Apply</a>
+  <a href="approvals.html">Approvals</a>
+  <a href="events.html">Events</a>
+  <a href="manifest.html">Manifest</a>
+  <a href="provision.html">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html">Backups</a>
+  <a href="network.html">Network</a>
+  <a href="dns.html">DNS</a>
+  <a href="health.html">Health</a>
+</nav>
+
+<main class="page">
+  <div class="page-title">Apply Manifest</div>
+
+  <!-- Source toggle -->
+  <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+    <span style="font-size:13px; color:var(--muted);">Diff desejado × observado</span>
+    <div class="tabs" style="margin-bottom:0; border-bottom:none;">
+      <a href="#" class="tab">git</a>
+      <a href="#" class="tab active">working</a>
+    </div>
+    <span style="font-family:var(--font-mono); font-size:12px; color:var(--muted);">source: working</span>
+  </div>
+
+  <!-- Diff list -->
+  <div class="section">
+    <div class="section-title" style="margin-bottom:10px;">Plano de mudanças</div>
+    <div class="detail-card" style="padding:0;">
+      <ul class="diff-list">
+        <li>
+          <span class="diff-op change">~</span>
+          <div class="diff-detail">
+            <div class="diff-entity">service:bevox-backend</div>
+            <div class="diff-desc">image v7 → v8  ·  estratégia: rolling  ·  réplicas: 2</div>
+          </div>
+          <span class="badge badge-applying">applying</span>
+        </li>
+        <li>
+          <span class="diff-op add">+</span>
+          <div class="diff-detail">
+            <div class="diff-entity">volume:pg-data-2</div>
+            <div class="diff-desc">criar 50Gi  ·  attach: server:bevox-db-1</div>
+          </div>
+          <span class="badge badge-pending">pending</span>
+        </li>
+        <li class="drift-row">
+          <span class="diff-op warn">!</span>
+          <div class="diff-detail">
+            <div class="diff-entity" style="color:var(--drift);">server:bevox-x-9</div>
+            <div class="diff-desc">DRIFT — não está no manifesto  ·  <strong style="color:var(--drift);">não destruído (fail-safe)</strong></div>
+          </div>
+          <span class="diff-readonly-warn">read-only · fail-safe</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="notice notice-drift">
+    <span>⚠</span>
+    <span>
+      <strong>Drift detectado:</strong> server:bevox-x-9 existe na Hetzner mas não está no manifesto.
+      Por política fail-safe, recursos em drift <strong>nunca são destruídos automaticamente</strong>.
+      Investigue e atualize o manifesto se necessário.
+      <a href="overview.html" style="margin-left:8px;">→ ver no overview</a>
+    </span>
+  </div>
+
+  <!-- Actions -->
+  <div class="btn-group" style="margin-top:8px;">
+    <a href="#" class="btn btn-secondary">[Re-plan]</a>
+    <span style="display:inline-flex; align-items:center; gap:8px;">
+      <a href="approvals.html" class="btn btn-primary">Apply (dry_run:false) → Approval</a>
+      <span class="approval-hint">→ Approval Gate</span>
+    </span>
+  </div>
+
+  <div class="notice notice-warn" style="margin-top:16px;">
+    <span>⚠</span>
+    <span>O apply requer aprovação antes de executar. Nenhuma operação destrutiva ou de custo é executada sem aprovação explícita.</span>
+  </div>
+</main>
+
+</body>
+</html>

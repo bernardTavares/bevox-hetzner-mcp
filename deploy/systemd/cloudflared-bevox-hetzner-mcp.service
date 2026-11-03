@@ -1,0 +1,18 @@
+[Unit]
+Description=cloudflared tunnel for bevox-hetzner-mcp
+After=network-online.target bevox-daemon.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bevox
+Group=bevox
+# Always pass --config: without it cloudflared falls back to ~/.cloudflared/config.yml
+# and may operate against a different tunnel on the same host.
+ExecStart=/usr/bin/cloudflared --no-autoupdate --config /opt/bevox-hetzner-mcp/deploy/cloudflared/config.yml tunnel run
+Restart=always
+RestartSec=5
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

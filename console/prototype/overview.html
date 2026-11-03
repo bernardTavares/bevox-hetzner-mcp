@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overview / Fleet — bevox-hetzner-mcp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html">Index</a>
+  <a href="overview.html" class="active">Overview</a>
+  <a href="entity-detail.html">Entity Detail</a>
+  <a href="plan-apply.html">Plan/Apply</a>
+  <a href="approvals.html">Approvals</a>
+  <a href="events.html">Events</a>
+  <a href="manifest.html">Manifest</a>
+  <a href="provision.html">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html">Backups</a>
+  <a href="network.html">Network</a>
+  <a href="dns.html">DNS</a>
+  <a href="health.html">Health</a>
+</nav>
+
+<main class="page">
+  <div class="page-title">Overview / Fleet</div>
+
+  <!-- Summary counters -->
+  <div class="counters">
+    <div class="counter-card">
+      <div class="label">Servers</div>
+      <div class="value">4</div>
+    </div>
+    <div class="counter-card">
+      <div class="label">Services</div>
+      <div class="value">9</div>
+    </div>
+    <div class="counter-card">
+      <div class="label">Volumes</div>
+      <div class="value">3</div>
+    </div>
+    <div class="counter-card">
+      <div class="label">DNS</div>
+      <div class="value">12</div>
+    </div>
+    <div class="counter-card warn">
+      <div class="label">⚠ Drift</div>
+      <div class="value">1</div>
+    </div>
+  </div>
+
+  <!-- Servers -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Servers</span>
+      <a href="provision.html" class="btn btn-secondary btn-sm">+ Provision server</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Network</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="entity-detail.html">bevox-app-1</a></td>
+            <td>cx32</td>
+            <td>nbg1</td>
+            <td><span class="badge badge-healthy">healthy</span></td>
+            <td>net:bevox-priv</td>
+          </tr>
+          <tr>
+            <td><a href="entity-detail.html">bevox-app-2</a></td>
+            <td>cx32</td>
+            <td>nbg1</td>
+            <td><span class="badge badge-healthy">healthy</span></td>
+            <td>net:bevox-priv</td>
+          </tr>
+          <tr>
+            <td><a href="entity-detail.html">bevox-db-1</a></td>
+            <td>cx42</td>
+            <td>nbg1</td>
+            <td><span class="badge badge-degraded">degraded</span></td>
+            <td><span style="color:var(--muted); font-size:12px;">1/2 checks</span></td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--drift)">bevox-x-9</span></td>
+            <td>cx22</td>
+            <td>fsn1</td>
+            <td><span class="badge badge-drift">DRIFT</span></td>
+            <td>
+              <span class="diff-readonly-warn">não está no manifesto · read-only</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Services -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Services</span>
+      <a href="#" class="btn btn-secondary btn-sm">+ Deploy service</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Version</th>
+            <th>Replicas</th>
+            <th>Status</th>
+            <th>Servers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="entity-detail.html">bevox-harness</a></td>
+            <td>v12</td>
+            <td>2/2</td>
+            <td><span class="badge badge-healthy">healthy</span></td>
+            <td>app-1, app-2</td>
+          </tr>
+          <tr>
+            <td><a href="entity-detail.html">bevox-backend</a></td>
+            <td>v8</td>
+            <td>1/2</td>
+            <td><span class="badge badge-degraded">degraded</span></td>
+            <td>app-1</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Quick links -->
+  <div class="btn-group" style="margin-top:8px;">
+    <a href="plan-apply.html" class="btn btn-warn btn-sm">⚠ 1 drift detectado — ver diff</a>
+    <a href="health.html" class="btn btn-ghost btn-sm">Ver saúde geral →</a>
+  </div>
+</main>
+
+</body>
+</html>

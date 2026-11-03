@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Test / dev caches
+.vite/
+.vitest/
+coverage/
+
+# Environment — NEVER commit real secrets
+.env
+.env.local
+.env.*.local
+core/.env
+console/.env
+deploy/postgres/.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git worktrees (created by superpowers:using-git-worktrees)
+.worktrees/
+
+# Temp files
+*.tmp
+.pr-body.md
+
+# Claude Code — local dev state
+.claude/state/
+.claude/settings.local.json

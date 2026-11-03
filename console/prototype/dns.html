@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNS — bevox-hetzner-mcp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html">Index</a>
+  <a href="overview.html">Overview</a>
+  <a href="entity-detail.html">Entity Detail</a>
+  <a href="plan-apply.html">Plan/Apply</a>
+  <a href="approvals.html">Approvals</a>
+  <a href="events.html">Events</a>
+  <a href="manifest.html">Manifest</a>
+  <a href="provision.html">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html">Backups</a>
+  <a href="network.html">Network</a>
+  <a href="dns.html" class="active">DNS</a>
+  <a href="health.html">Health</a>
+</nav>
+
+<main class="page">
+  <div class="page-title">DNS Records</div>
+
+  <!-- Zone selector -->
+  <div class="zone-bar">
+    <span style="font-size:12px; color:var(--muted);">zone:</span>
+    <select class="filter-select" style="font-size:13px;">
+      <option selected>example.net ▾</option>
+      <option>example.org</option>
+      <option>example.com</option>
+    </select>
+    <span style="font-size:12px; font-family:var(--font-mono); color:var(--muted); margin-left:8px;">12 registros</span>
+  </div>
+
+  <!-- DNS records table -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">example.net</span>
+      <a href="#" class="btn btn-secondary btn-sm">+ Record</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>TTL</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family:var(--font-mono);">app</td>
+            <td><span class="badge badge-pending" style="font-size:11px;">A</span></td>
+            <td style="font-family:var(--font-mono);">→ 1.2.3.4</td>
+            <td style="font-family:var(--font-mono); color:var(--muted);">300</td>
+            <td>
+              <a href="#" class="btn btn-ghost btn-sm">[Editar]</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-family:var(--font-mono);">api</td>
+            <td><span class="badge badge-applying" style="font-size:11px;">CNAME</span></td>
+            <td style="font-family:var(--font-mono);">→ app.example.net</td>
+            <td style="font-family:var(--font-mono); color:var(--muted);">300</td>
+            <td>
+              <a href="#" class="btn btn-ghost btn-sm">[Editar]</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-family:var(--font-mono);">@</td>
+            <td><span class="badge badge-pending" style="font-size:11px;">A</span></td>
+            <td style="font-family:var(--font-mono);">→ 1.2.3.4</td>
+            <td style="font-family:var(--font-mono); color:var(--muted);">3600</td>
+            <td>
+              <a href="#" class="btn btn-ghost btn-sm">[Editar]</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-family:var(--font-mono);">www</td>
+            <td><span class="badge badge-applying" style="font-size:11px;">CNAME</span></td>
+            <td style="font-family:var(--font-mono);">→ app.example.net</td>
+            <td style="font-family:var(--font-mono); color:var(--muted);">300</td>
+            <td>
+              <a href="#" class="btn btn-ghost btn-sm">[Editar]</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-family:var(--font-mono); color:var(--muted);" colspan="5">
+              + 8 registros (MX, TXT, NS...) ·
+              <a href="#" style="font-size:12px;">exibir todos</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="font-size:12px; color:var(--muted); font-family:var(--font-mono); padding-top:12px; border-top:1px solid var(--border);">
+    set_dns: upsert, sem approval — mudanças de DNS aplicadas diretamente sem Approval Gate
+  </div>
+</main>
+
+</body>
+</html>

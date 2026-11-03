@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Provision Server — bevox-hetzner-mcp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html">Index</a>
+  <a href="overview.html">Overview</a>
+  <a href="entity-detail.html">Entity Detail</a>
+  <a href="plan-apply.html">Plan/Apply</a>
+  <a href="approvals.html">Approvals</a>
+  <a href="events.html">Events</a>
+  <a href="manifest.html">Manifest</a>
+  <a href="provision.html" class="active">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html">Backups</a>
+  <a href="network.html">Network</a>
+  <a href="dns.html">DNS</a>
+  <a href="health.html">Health</a>
+</nav>
+
+<main class="page">
+  <div class="page-title">Provision Server</div>
+
+  <!-- Wizard step indicator — step 2 active -->
+  <div class="wizard-steps">
+    <div class="wizard-step done">
+      <div class="step-num">✓</div>
+      <span>1 · Básico</span>
+    </div>
+    <div class="step-sep">›</div>
+    <div class="wizard-step active">
+      <div class="step-num">2</div>
+      <span>2 · Rede</span>
+    </div>
+    <div class="step-sep">›</div>
+    <div class="wizard-step">
+      <div class="step-num">3</div>
+      <span>3 · Revisão</span>
+    </div>
+  </div>
+
+  <!-- Step 2: Rede — shown as active. Fields from step 1 shown as summary above. -->
+  <div class="notice notice-info" style="margin-bottom:20px;">
+    <span>ℹ</span>
+    <span>Passo 1 concluído: <strong style="font-family:var(--font-mono)">name=bevox-app-3 · type=cx32 · location=nbg1 · image=ubuntu-24.04 · ssh_keys=[bevox-ops]</strong></span>
+  </div>
+
+  <div class="detail-card" style="margin-bottom:20px;">
+    <div style="font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:16px;">Passo 2 · Rede &amp; Volumes</div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Network</label>
+        <select class="form-select">
+          <option selected>bevox-priv</option>
+          <option>bevox-internal</option>
+          <option>+ criar nova rede</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Labels</label>
+        <input class="form-input" type="text" value="app=harness" readonly>
+      </div>
+      <div class="form-field">
+        <label>Volumes a anexar</label>
+        <select class="form-select">
+          <option selected>+ attach pg-data (50Gi)</option>
+          <option>+ attach pg-data-2 (50Gi)</option>
+          <option>sem volumes</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Firewall rules</label>
+        <select class="form-select">
+          <option selected>bevox-default</option>
+          <option>bevox-db</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cost / approval warning -->
+  <div class="notice notice-warn" style="margin-bottom:20px; font-size:13px;">
+    <span>⚠</span>
+    <div>
+      <strong>Operação com custo:</strong>&nbsp;
+      <span style="font-family:var(--font-mono)">est. custo ~€12.49/mês (cx32 nbg1)</span>
+      <br>
+      <span style="font-size:12px; margin-top:4px; display:block;">
+        Provisionar um servidor cria recurso real na Hetzner e gera custo imediato.
+        Esta ação requer <strong>Approval Gate</strong> antes de ser executada.
+      </span>
+      <span class="approval-hint" style="margin-top:6px; display:inline-block;">→ Approval Gate</span>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="btn-group">
+    <a href="overview.html" class="btn btn-ghost">[Voltar]</a>
+    <a href="approvals.html" class="btn btn-primary">[Plan (dry_run)] → Revisão</a>
+  </div>
+
+  <div style="margin-top:20px; font-size:12px; color:var(--muted); font-family:var(--font-mono);">
+    Passo 3 (Revisão) mostrará o plano completo antes de solicitar aprovação.
+  </div>
+</main>
+
+</body>
+</html>

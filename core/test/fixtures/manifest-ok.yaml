@@ -1,0 +1,14 @@
+servers:
+  - name: bevox-app-1
+    type: cx32
+    location: nbg1
+    network: bevox-priv
+services:
+  - name: bevox-harness
+    image: registry/bevox-harness:tag
+    replicas: 2
+    server_selector: { label: app }
+backups:
+  - target: volume:pg-data
+    schedule: "0 3 * * *"
+    retention: 14d

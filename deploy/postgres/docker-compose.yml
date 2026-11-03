@@ -1,0 +1,21 @@
+name: bevox-hetzner-mcp
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bevox-mcp-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bevox
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina em deploy/postgres/.env}
+      POSTGRES_DB: bevox
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - bevox_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bevox -d bevox"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  bevox_pgdata:

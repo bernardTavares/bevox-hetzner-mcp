@@ -1,0 +1,40 @@
+{
+  "name": "@bevox/core",
+  "version": "0.1.0",
+  "license": "FSL-1.1-MIT",
+  "private": true,
+  "type": "module",
+  "description": "bevox-hetzner-mcp core — agent-native Hetzner control plane (state store, reconciler, providers, MCP interface)",
+  "ciNote": "CI runs `npm --prefix core test` + integration fakes on every commit; `@live` manual pre-release only.",
+  "securityNotes": "npm audit: 5 moderate are dev-only (vitest@2→esbuild, GHSA-67mh-4wv8-2f99); accepted — no runtime/CI exposure, vitest pinned ^2 per ratified plan & parity with console/. Revisit if vitest majors.",
+  "bin": {
+    "bevox-hetzner-mcp": "dist/main.js"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "live": "vitest run --project live --passWithNoTests",
+    "start": "tsx --env-file-if-exists=.env src/main.ts",
+    "dev": "tsx watch --env-file-if-exists=.env src/main.ts",
+    "build": "tsc -p tsconfig.build.json && mkdir -p dist/store/migrations && cp src/store/migrations/*.sql dist/store/migrations/"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "pg": "^8.13.3",
+    "pino": "^10.3.1",
+    "yaml": "^2.7.1",
+    "zod": "^3.24.4"
+  },
+  "engines": {
+    "node": ">=20.12.0"
+  },
+  "engineNote": "node >=20.12.0 (bumped from >=20.0.0) so the native `node --env-file-if-exists` flag — used by start/dev and the documented built run path to load core/.env with zero new dependency — is guaranteed available (it lands in Node 20.12). The flag tolerates an absent file (process-manager/container-injected env), then loadConfig still fails fast value-free.",
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "@types/pg": "^8.11.11",
+    "tsx": "^4.19.2",
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.9"
+  }
+}

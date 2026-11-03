@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Edit(core/src/**)",
+      "Edit(core/test/**)",
+      "Edit(console/**)",
+      "Edit(docs/**)",
+      "Edit(.claude/**)",
+      "Edit(package.json)",
+      "Edit(core/package.json)",
+      "Edit(console/package.json)",
+      "Edit(tsconfig*.json)",
+      "Edit(core/tsconfig*.json)",
+      "Edit(console/tsconfig*.json)",
+      "Edit(vitest*.config.ts)",
+      "Edit(core/vitest*.config.ts)",
+      "Edit(README.md)",
+      "Edit(CLAUDE.md)",
+      "Edit(CONTRIBUTING.md)",
+      "Edit(*.md)",
+      "Write(core/src/**)",
+      "Write(core/test/**)",
+      "Write(console/**)",
+      "Write(docs/**)",
+      "Write(.claude/**)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(tsx:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(docker:*)",
+      "Bash(ls:*)",
+      "Bash(pwd)",
+      "Bash(jq:*)"
+    ],
+    "deny": [
+      "Edit(docs/specs/2026-05-17-bevox-hetzner-mcp-design.md)",
+      "Write(docs/specs/2026-05-17-bevox-hetzner-mcp-design.md)",
+      "Edit(docs/specs/2026-05-20-bevox-hetzner-mcp-v2-architecture-contract.md)",
+      "Write(docs/specs/2026-05-20-bevox-hetzner-mcp-v2-architecture-contract.md)",
+      "Edit(LICENSE)",
+      "Write(LICENSE)",
+      "Edit(SECURITY.md)",
+      "Write(SECURITY.md)",
+      "Edit(.gitleaks.toml)",
+      "Write(.gitleaks.toml)",
+      "Read(.env)",
+      "Read(core/.env)",
+      "Read(console/.env)",
+      "Read(.env.local)",
+      "Read(.env.*.local)",
+      "Bash(rm -rf:*)",
+      "Bash(rm -fr:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -fdx:*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/SessionStart.sh" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/PreToolUse-guard.sh" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/PostToolUse-providers.sh" },
+          { "type": "command", "command": ".claude/hooks/PostToolUse-tools.sh" },
+          { "type": "command", "command": ".claude/hooks/PostToolUse-leak-scan.sh" },
+          { "type": "command", "command": ".claude/hooks/PostToolUse-spec.sh" }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/PreCompact.sh" }
+        ]
+      }
+    ]
+  }
+}

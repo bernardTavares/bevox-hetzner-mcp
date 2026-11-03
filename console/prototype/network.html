@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Network / WireGuard — bevox-hetzner-mcp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html">Index</a>
+  <a href="overview.html">Overview</a>
+  <a href="entity-detail.html">Entity Detail</a>
+  <a href="plan-apply.html">Plan/Apply</a>
+  <a href="approvals.html">Approvals</a>
+  <a href="events.html">Events</a>
+  <a href="manifest.html">Manifest</a>
+  <a href="provision.html">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html">Backups</a>
+  <a href="network.html" class="active">Network</a>
+  <a href="dns.html">DNS</a>
+  <a href="health.html">Health</a>
+</nav>
+
+<main class="page">
+  <div class="page-title">Network / WireGuard</div>
+
+  <!-- Network card -->
+  <div class="detail-card" style="margin-bottom:20px;">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+      <div>
+        <div style="font-family:var(--font-mono); font-size:15px; font-weight:700;">bevox-priv</div>
+        <div style="font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-top:4px;">
+          10.0.0.0/16  ·  subnets: 10.0.1.0/24
+        </div>
+      </div>
+      <span class="badge badge-healthy">healthy</span>
+    </div>
+
+    <!-- Members -->
+    <div style="margin-bottom:14px;">
+      <div class="detail-label" style="margin-bottom:8px;">Members</div>
+      <div>
+        <span class="peer-chip">
+          <span class="peer-dot up"></span>
+          <span>app-1</span>
+          <span style="color:var(--muted);">10.0.1.2</span>
+        </span>
+        <span class="peer-chip">
+          <span class="peer-dot up"></span>
+          <span>app-2</span>
+          <span style="color:var(--muted);">10.0.1.3</span>
+        </span>
+        <span class="peer-chip">
+          <span class="peer-dot warn"></span>
+          <span>db-1</span>
+          <span style="color:var(--muted);">10.0.1.4</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- WireGuard mesh -->
+    <div style="font-family:var(--font-mono); font-size:13px; margin-bottom:10px;">
+      <span style="color:var(--muted);">WireGuard mesh:</span>
+      <span style="color:var(--healthy); margin-left:8px;">3/3 peers up</span>
+    </div>
+
+    <!-- Degraded peer warning -->
+    <div class="notice notice-warn">
+      <span>⚠</span>
+      <span>
+        peer <strong style="font-family:var(--font-mono)">db-1</strong> — handshake
+        <strong>4m atrás</strong> (degraded) ·
+        <span style="font-family:var(--font-mono);">last_handshake: 2026-05-17 13:58</span>
+      </span>
+    </div>
+
+    <div style="margin-top:14px; font-size:12px; color:var(--muted); font-family:var(--font-mono);">
+      membership = label do server, declarativo — altere no manifesto para adicionar/remover members
+      <a href="manifest.html" style="margin-left:8px;">→ editar manifesto</a>
+    </div>
+  </div>
+
+  <!-- Subnet details -->
+  <div class="section">
+    <div class="section-title" style="margin-bottom:10px;">Subnets</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Subnet</th>
+            <th>Gateway</th>
+            <th>Tipo</th>
+            <th>Membros</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family:var(--font-mono);">10.0.1.0/24</td>
+            <td style="font-family:var(--font-mono);">10.0.1.1</td>
+            <td>cloud</td>
+            <td style="font-family:var(--font-mono);">app-1, app-2, db-1</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="btn-group" style="margin-top:8px;">
+    <a href="#" class="btn btn-secondary btn-sm">+ Network</a>
+    <span style="font-size:12px; color:var(--muted); font-family:var(--font-mono);">(membership = label do server, declarativo)</span>
+  </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Approvals — bevox-hetzner-mcp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html">Index</a>
+  <a href="overview.html">Overview</a>
+  <a href="entity-detail.html">Entity Detail</a>
+  <a href="plan-apply.html">Plan/Apply</a>
+  <a href="approvals.html" class="active">Approvals</a>
+  <a href="events.html">Events</a>
+  <a href="manifest.html">Manifest</a>
+  <a href="provision.html">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html">Backups</a>
+  <a href="network.html">Network</a>
+  <a href="dns.html">DNS</a>
+  <a href="health.html">Health</a>
+</nav>
+
+<main class="page">
+  <div class="page-title">
+    Pending Approvals
+    <span class="badge badge-degraded" style="font-size:13px; padding:4px 10px;">2 pendentes</span>
+  </div>
+
+  <!-- Approval 1 -->
+  <div class="approval-card">
+    <div class="apr-id">apr_8f3</div>
+    <div class="apr-action">
+      <span class="badge badge-error" style="margin-right:8px;">destrutivo</span>
+      destroy server:bevox-db-1
+    </div>
+    <div class="apr-meta">
+      por: <span style="color:var(--pending);">vox</span>
+      &nbsp;·&nbsp;
+      TTL: <span style="color:var(--degraded);">22h restantes</span>
+      &nbsp;·&nbsp;
+      solicitado: 2026-05-17 12:00
+    </div>
+    <div class="apr-impact">
+      impacto: remove server:bevox-db-1 + detach volume:pg-data  ·  serviços afetados: bevox-backend
+    </div>
+    <div class="btn-group">
+      <a href="events.html" class="btn btn-primary">[Aprovar]</a>
+      <a href="#" class="btn btn-danger">[Rejeitar]</a>
+      <a href="#" class="apr-link">↗ abrir no Approval Center</a>
+    </div>
+  </div>
+
+  <!-- Approval 2 -->
+  <div class="approval-card">
+    <div class="apr-id">apr_8f4</div>
+    <div class="apr-action">
+      <span class="badge badge-error" style="margin-right:8px;">destrutivo</span>
+      restore volume:pg-data ← snap 2026-05-16
+    </div>
+    <div class="apr-meta">
+      por: <span style="color:var(--pending);">bernard</span>
+      &nbsp;·&nbsp;
+      TTL: <span style="color:var(--degraded);">23h restantes</span>
+      &nbsp;·&nbsp;
+      solicitado: 2026-05-17 11:00
+    </div>
+    <div class="apr-impact">
+      impacto: restore sobrescreve estado atual do volume:pg-data com snapshot de 2026-05-16 03:00 (2.1Gi)  ·  potencial perda de dados
+    </div>
+    <div class="btn-group">
+      <a href="events.html" class="btn btn-primary">[Aprovar]</a>
+      <a href="#" class="btn btn-danger">[Rejeitar]</a>
+      <a href="#" class="apr-link">↗ abrir no Approval Center</a>
+    </div>
+  </div>
+
+  <div class="notice notice-warn">
+    <span>⚠</span>
+    <span>Aprovações com TTL expirado são automaticamente rejeitadas. Operações destrutivas nunca são executadas sem aprovação explícita dentro do TTL.</span>
+  </div>
+
+  <div style="margin-top:16px;">
+    <a href="events.html" class="btn btn-ghost btn-sm">Ver audit trail de aprovações →</a>
+  </div>
+</main>
+
+</body>
+</html>

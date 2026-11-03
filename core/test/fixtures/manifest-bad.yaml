@@ -1,0 +1,8 @@
+servers:
+  - name: bevox-app-1
+    type: cx32
+    location: nbg1
+    network: bevox-priv
+services:
+  - name: bevox-harness-missing-image
+    replicas: 2

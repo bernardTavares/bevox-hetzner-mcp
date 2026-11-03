@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health — bevox-hetzner-mcp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html">Index</a>
+  <a href="overview.html">Overview</a>
+  <a href="entity-detail.html">Entity Detail</a>
+  <a href="plan-apply.html">Plan/Apply</a>
+  <a href="approvals.html">Approvals</a>
+  <a href="events.html">Events</a>
+  <a href="manifest.html">Manifest</a>
+  <a href="provision.html">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html">Backups</a>
+  <a href="network.html">Network</a>
+  <a href="dns.html">DNS</a>
+  <a href="health.html" class="active">Health</a>
+</nav>
+
+<main class="page">
+  <div class="page-title">Health</div>
+
+  <!-- Circuit breakers -->
+  <div class="section">
+    <div class="section-title" style="margin-bottom:10px;">Circuit Breakers</div>
+    <div class="detail-card" style="padding:16px 20px;">
+      <div class="circuit-row">
+        <span class="circuit-dot" style="color:var(--healthy);">●</span>
+        <span style="font-family:var(--font-mono); font-size:13px;">circuit: HetznerCloud</span>
+        <span class="badge badge-closed">closed</span>
+      </div>
+      <div class="circuit-row">
+        <span class="circuit-dot" style="color:var(--healthy);">●</span>
+        <span style="font-family:var(--font-mono); font-size:13px;">circuit: Docker</span>
+        <span class="badge badge-closed">closed</span>
+      </div>
+      <div class="circuit-row" style="background:var(--degraded-bg); margin:0 -20px; padding:12px 20px; border-radius:0;">
+        <span class="circuit-dot" style="color:var(--degraded);">●</span>
+        <span style="font-family:var(--font-mono); font-size:13px;">circuit: DNS</span>
+        <span class="badge badge-open">open ⚠</span>
+        <span style="font-family:var(--font-mono); font-size:12px; color:var(--degraded); margin-left:8px;">
+          falhas recentes: 3/5 · last_failure: 2026-05-17 13:55
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Degraded entities -->
+  <div class="section">
+    <div class="section-title" style="margin-bottom:10px;">Entidades Degradadas</div>
+    <div class="health-group">
+      <div class="health-group-title">degraded</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Entidade</th>
+              <th>Detalhe</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <a href="entity-detail.html" style="font-family:var(--font-mono);">service:bevox-backend</a>
+              </td>
+              <td style="font-family:var(--font-mono); font-size:12px; color:var(--degraded);">
+                1/2 réplicas up · replica.2 restarting
+              </td>
+              <td>
+                <a href="entity-detail.html" class="btn btn-ghost btn-sm">ver detalhe →</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a href="entity-detail.html" style="font-family:var(--font-mono);">server:bevox-db-1</a>
+              </td>
+              <td style="font-family:var(--font-mono); font-size:12px; color:var(--degraded);">
+                1/2 health checks passing · disk 89%
+              </td>
+              <td>
+                <a href="entity-detail.html" class="btn btn-ghost btn-sm">ver detalhe →</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Blocked / drift -->
+    <div class="health-group" style="margin-top:16px;">
+      <div class="health-group-title">blocked</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Entidade</th>
+              <th>Motivo</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-family:var(--font-mono);">volume:pg-data-2</td>
+              <td style="font-family:var(--font-mono); font-size:12px; color:var(--drift);">
+                dep server:bevox-x-9 em drift — bloqueado até resolução
+              </td>
+              <td>
+                <a href="plan-apply.html" class="btn btn-ghost btn-sm">ver diff →</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drift (read-only) -->
+  <div class="section">
+    <div class="section-title" style="margin-bottom:10px;">Drift detectado</div>
+    <div class="notice notice-drift">
+      <span>⚠</span>
+      <span>
+        <strong style="font-family:var(--font-mono)">server:bevox-x-9</strong> —
+        existe na Hetzner mas não está no manifesto (drift).
+        Reportado, <strong>não destruído</strong> (fail-safe).
+        <a href="plan-apply.html" style="margin-left:8px;">→ ver diff</a>
+        <br>
+        <span style="font-size:12px; color:var(--drift);">Nenhuma ação destrutiva disponível para drift nesta tela.</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Reconciler status -->
+  <div class="section">
+    <div class="section-title" style="margin-bottom:10px;">Reconciler</div>
+    <div class="detail-card" style="padding:16px 20px;">
+      <div style="font-family:var(--font-mono); font-size:13px; display:flex; flex-wrap:wrap; gap:20px; align-items:center;">
+        <div>
+          <span style="color:var(--muted);">estado:</span>
+          <span style="color:var(--healthy); margin-left:6px; font-weight:700;">idle</span>
+        </div>
+        <div>
+          <span style="color:var(--muted);">último ciclo:</span>
+          <span style="margin-left:6px;">2026-05-17 14:02</span>
+          <span class="badge badge-ok" style="margin-left:8px;">ok</span>
+        </div>
+        <div>
+          <span style="color:var(--muted);">próximo ciclo:</span>
+          <span style="color:var(--pending); margin-left:6px;">~5m</span>
+        </div>
+        <div>
+          <span style="color:var(--muted);">ciclos totais:</span>
+          <span style="margin-left:6px;">1,247</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backups — bevox-hetzner-mcp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html">Index</a>
+  <a href="overview.html">Overview</a>
+  <a href="entity-detail.html">Entity Detail</a>
+  <a href="plan-apply.html">Plan/Apply</a>
+  <a href="approvals.html">Approvals</a>
+  <a href="events.html">Events</a>
+  <a href="manifest.html">Manifest</a>
+  <a href="provision.html">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html" class="active">Backups</a>
+  <a href="network.html">Network</a>
+  <a href="dns.html">DNS</a>
+  <a href="health.html">Health</a>
+</nav>
+
+<main class="page">
+  <div class="page-title">Backup Policies (restic)</div>
+
+  <!-- Policy card -->
+  <div class="detail-card" style="margin-bottom:20px;">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div style="font-family:var(--font-mono); font-size:15px; font-weight:700; margin-bottom:10px;">
+          volume:pg-data
+        </div>
+        <div class="detail-grid" style="grid-template-columns:repeat(4, auto); gap:12px 28px;">
+          <div class="detail-field">
+            <div class="detail-label">Schedule</div>
+            <div class="detail-value">0 3 * * *</div>
+          </div>
+          <div class="detail-field">
+            <div class="detail-label">Retention</div>
+            <div class="detail-value">14d</div>
+          </div>
+          <div class="detail-field">
+            <div class="detail-label">Repo</div>
+            <div class="detail-value">restic:hetzner-backup</div>
+          </div>
+          <div class="detail-field">
+            <div class="detail-label">Último backup</div>
+            <div class="detail-value" style="color:var(--healthy);">2026-05-17 03:00 ok (2.1Gi)</div>
+          </div>
+        </div>
+      </div>
+      <span class="badge badge-healthy" style="align-self:flex-start;">ok</span>
+    </div>
+
+    <!-- Snapshots -->
+    <div style="margin-top:16px;">
+      <div class="detail-label" style="margin-bottom:8px;">Snapshots disponíveis</div>
+      <div class="snapshot-list">
+        <div class="snap-chip">2026-05-17 03:00 · 2.1Gi</div>
+        <div class="snap-chip">2026-05-16 03:00 · 2.0Gi</div>
+        <div class="snap-chip">2026-05-15 03:00 · 2.0Gi</div>
+        <div class="snap-chip">2026-05-14 03:00 · 1.9Gi</div>
+        <div class="snap-chip">2026-05-13 03:00 · 1.9Gi</div>
+        <div class="snap-chip" style="color:var(--muted);">+ 9 mais...</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="btn-group" style="margin-top:18px;">
+      <a href="#" class="btn btn-secondary">[Snapshot agora]</a>
+      <span style="display:inline-flex; align-items:center; gap:8px;">
+        <a href="approvals.html" class="btn btn-danger">[Restore ⚠ destrutivo → Approval]</a>
+        <span class="approval-hint">→ Approval Gate</span>
+      </span>
+    </div>
+
+    <div class="notice notice-warn" style="margin-top:14px;">
+      <span>⚠</span>
+      <span>
+        <strong>Restore é destrutivo:</strong> sobrescreve o estado atual do volume com o snapshot selecionado.
+        Potencial perda de dados. Requer <strong>Approval Gate</strong> antes de executar.
+      </span>
+    </div>
+  </div>
+
+  <!-- Empty policy placeholder -->
+  <div style="font-size:13px; color:var(--muted); padding:12px 0; border-top:1px solid var(--border); font-family:var(--font-mono);">
+    pg-data-2 — sem política de backup configurada  ·  <a href="manifest.html">configurar no manifesto →</a>
+  </div>
+
+  <div style="margin-top:16px;">
+    <a href="#" class="btn btn-secondary btn-sm">+ Nova política de backup</a>
+  </div>
+</main>
+
+</body>
+</html>

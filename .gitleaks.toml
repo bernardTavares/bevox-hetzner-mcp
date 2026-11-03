@@ -1,0 +1,30 @@
+# Gitleaks config — allowlist for test sentinels and stub PEMs.
+#
+# Run:
+#   docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
+#     detect --source=/repo --no-banner --redact --config=/repo/.gitleaks.toml
+#
+# All entries below are TEST-ONLY fixtures, NOT real secrets:
+#   - "S3CR3T-X.Y-must-never-leak-XYZ" sentinels: deliberately searched for in
+#     test outputs to verify that the code does NOT leak secrets to logs/plans.
+#     They are the OPPOSITE of secrets — their presence in the codebase is a
+#     test of leak prevention.
+#   - "fakecert-*" / "fakekey-*" stub PEMs: stub strings consumed by the mock
+#     PEM parser in F3.3 HetznerCertificateProvider tests. Not valid X.509.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Test sentinels and stub PEM fixtures (never real secrets)."
+regexes = [
+  '''S3CR3T-[0-9.]+-[a-z-]+-[A-Za-z0-9]+''',
+  '''fakecert-[a-z]+''',
+  '''fakekey-[a-z]+''',
+]
+paths = [
+  '''core/src/main\.test\.ts''',
+  '''core/src/server\.test\.ts''',
+  '''core/src/reconciler/reconcile\.services\.test\.ts''',
+  '''core/src/providers/v2/hetzner-certificate\.test\.ts''',
+]

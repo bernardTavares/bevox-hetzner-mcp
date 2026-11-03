@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entity Detail — bevox-hetzner-mcp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html">Index</a>
+  <a href="overview.html">Overview</a>
+  <a href="entity-detail.html" class="active">Entity Detail</a>
+  <a href="plan-apply.html">Plan/Apply</a>
+  <a href="approvals.html">Approvals</a>
+  <a href="events.html">Events</a>
+  <a href="manifest.html">Manifest</a>
+  <a href="provision.html">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html">Backups</a>
+  <a href="network.html">Network</a>
+  <a href="dns.html">DNS</a>
+  <a href="health.html">Health</a>
+</nav>
+
+<main class="page">
+  <div style="margin-bottom:8px; font-size:12px; color:var(--muted);">
+    <a href="overview.html">← Overview</a>
+    <span style="margin:0 6px;">›</span>
+    <span>service:bevox-harness</span>
+  </div>
+
+  <div class="page-title">
+    Service: bevox-harness
+    <span class="badge badge-healthy">healthy</span>
+  </div>
+
+  <!-- Detail fields -->
+  <div class="detail-card">
+    <div class="detail-grid">
+      <div class="detail-field">
+        <div class="detail-label">Image</div>
+        <div class="detail-value">registry/bevox-harness:v12</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-label">Replicas</div>
+        <div class="detail-value">2 / 2</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-label">Servers</div>
+        <div class="detail-value">app-1, app-2</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-label">Ports</div>
+        <div class="detail-value">8080 → 80</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-label">Env from</div>
+        <div class="detail-value">secret:bevox-harness</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-label">Network</div>
+        <div class="detail-value">bevox-priv</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Replicas -->
+  <div class="section">
+    <div class="section-title" style="margin-bottom:12px;">Replicas</div>
+    <div class="replica-list">
+      <div class="replica-chip">
+        <span class="r-name">harness.1</span>
+        <span class="r-host" style="margin-left:8px;">app-1</span>
+        <span class="r-uptime">Up 4h</span>
+      </div>
+      <div class="replica-chip">
+        <span class="r-name">harness.2</span>
+        <span class="r-host" style="margin-left:8px;">app-2</span>
+        <span class="r-uptime">Up 4h</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="section">
+    <div class="section-title" style="margin-bottom:12px;">Ações</div>
+    <div class="btn-group">
+      <a href="#" class="btn btn-secondary">[Edit (dry-run)]</a>
+      <a href="#" class="btn btn-secondary">[Scale]</a>
+      <a href="#" class="btn btn-secondary">[Restart]</a>
+      <span style="display:inline-flex; align-items:center; gap:8px;">
+        <a href="approvals.html" class="btn btn-danger">[Destroy ⚠]</a>
+        <span class="approval-hint">→ Approval Gate</span>
+      </span>
+    </div>
+    <div class="notice notice-warn" style="margin-top:14px; font-size:12px;">
+      <span>⚠</span>
+      <span>Ações destrutivas (Destroy) requerem aprovação humana ou do agente responsável antes de serem executadas. Nenhum recurso é removido sem aprovação explícita.</span>
+    </div>
+  </div>
+
+  <!-- Recent events -->
+  <div class="section">
+    <div class="section-title" style="margin-bottom:12px;">Eventos recentes</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Ator</th>
+            <th>Ação</th>
+            <th>Detalhe</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="event-table" style="color:var(--muted)">14:02</td>
+            <td><span class="event-actor">vox</span></td>
+            <td class="event-entity">update service:bevox-harness</td>
+            <td class="event-desc">v11 → v12 rolling restart</td>
+            <td><span class="badge badge-ok">ok</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:10px;">
+      <a href="events.html" class="btn btn-ghost btn-sm">Ver todos os eventos →</a>
+    </div>
+  </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_comment": [
+    "settings.local.json — PER-DEVELOPER overrides. NOT committed (see .gitignore).",
+    "",
+    "Copy this file to '.claude/settings.local.json' and edit the absolute paths to",
+    "match YOUR machine. Use this file to grant Claude read-only access to OTHER",
+    "local repositories you cross-reference (knowledge bases, sibling projects, etc).",
+    "",
+    "The committed '.claude/settings.json' MUST NOT contain absolute user paths because",
+    "this is a public repository.",
+    "",
+    "Examples below assume the standard Bevox dev layout under C:/Users/<you>/dev/.",
+    "Adjust to your OS and username. Forward slashes work on Windows too."
+  ],
+  "permissions": {
+    "allow": [
+      "Read(../bevox-knowledge/**)",
+      "Read(../agency-agents/**)",
+      "Read(../bevox-PRD-consolidation/**)",
+      "Read(../bevox-agent-harness/**)"
+    ]
+  }
+}

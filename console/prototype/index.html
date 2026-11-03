@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bevox-hetzner-mcp — Console Prototype</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar-brand" href="index.html">bevox-hetzner-mcp</a>
+  <span class="topbar-agent">agent: bernard</span>
+</header>
+
+<nav class="navbar">
+  <a href="index.html" class="active">Index</a>
+  <a href="overview.html">Overview</a>
+  <a href="entity-detail.html">Entity Detail</a>
+  <a href="plan-apply.html">Plan/Apply</a>
+  <a href="approvals.html">Approvals</a>
+  <a href="events.html">Events</a>
+  <a href="manifest.html">Manifest</a>
+  <a href="provision.html">Provision</a>
+  <a href="secrets.html">Secrets</a>
+  <a href="backups.html">Backups</a>
+  <a href="network.html">Network</a>
+  <a href="dns.html">DNS</a>
+  <a href="health.html">Health</a>
+</nav>
+
+<main class="page">
+  <div class="page-title">Console — Prototipo Navegável</div>
+
+  <div class="notice notice-info">
+    <span>ℹ</span>
+    <span>Protótipo estático de aprovação de design. Clique nos cards abaixo para navegar pelas 12 telas. Nenhuma lógica real — dados hardcoded.</span>
+  </div>
+
+  <div class="index-grid">
+    <a class="index-card" href="overview.html">
+      <div class="ic-num">01</div>
+      <div class="ic-name">Overview / Fleet</div>
+      <div class="ic-desc">Visão geral de servidores, services, volumes e drift detectado.</div>
+    </a>
+    <a class="index-card" href="entity-detail.html">
+      <div class="ic-num">02</div>
+      <div class="ic-name">Entity Detail</div>
+      <div class="ic-desc">Detalhe do service bevox-harness: réplicas, ações, eventos recentes.</div>
+    </a>
+    <a class="index-card" href="plan-apply.html">
+      <div class="ic-num">03</div>
+      <div class="ic-name">Plan / Apply</div>
+      <div class="ic-desc">Diff desejado × observado e fluxo de aprovação de apply.</div>
+    </a>
+    <a class="index-card" href="approvals.html">
+      <div class="ic-num">04</div>
+      <div class="ic-name">Approvals</div>
+      <div class="ic-desc">Fila de aprovações pendentes com ações destrutivas.</div>
+    </a>
+    <a class="index-card" href="events.html">
+      <div class="ic-num">05</div>
+      <div class="ic-name">Events</div>
+      <div class="ic-desc">Audit trail append-only de todas as operações do sistema.</div>
+    </a>
+    <a class="index-card" href="manifest.html">
+      <div class="ic-num">06</div>
+      <div class="ic-name">Manifest</div>
+      <div class="ic-desc">Estado desejado em YAML — tabs git / working.</div>
+    </a>
+    <a class="index-card" href="provision.html">
+      <div class="ic-num">07</div>
+      <div class="ic-name">Provision Server</div>
+      <div class="ic-desc">Wizard 3 passos para provisionar um novo servidor (com Approval Gate).</div>
+    </a>
+    <a class="index-card" href="secrets.html">
+      <div class="ic-num">08</div>
+      <div class="ic-name">Secrets</div>
+      <div class="ic-desc">Referências de secrets — valores nunca exibidos.</div>
+    </a>
+    <a class="index-card" href="backups.html">
+      <div class="ic-num">09</div>
+      <div class="ic-name">Backups</div>
+      <div class="ic-desc">Políticas restic + snapshots + restore com Approval Gate.</div>
+    </a>
+    <a class="index-card" href="network.html">
+      <div class="ic-num">10</div>
+      <div class="ic-name">Network / WireGuard</div>
+      <div class="ic-desc">Redes privadas e status do mesh WireGuard.</div>
+    </a>
+    <a class="index-card" href="dns.html">
+      <div class="ic-num">11</div>
+      <div class="ic-name">DNS</div>
+      <div class="ic-desc">Registros DNS da zona example.net.</div>
+    </a>
+    <a class="index-card" href="health.html">
+      <div class="ic-num">12</div>
+      <div class="ic-name">Health</div>
+      <div class="ic-desc">Circuit breakers, estado do reconciler e entidades degradadas.</div>
+    </a>
+  </div>
+
+  <div style="margin-top:40px; padding-top:24px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); font-family:var(--font-mono);">
+    Fluxos-chave:
+    <span style="margin-left:16px;">Overview → Entity Detail</span>
+    <span style="margin-left:16px;">Plan/Apply → Approvals → Events</span>
+    <span style="margin-left:16px;">Provision (wizard 3 passos)</span>
+    <span style="margin-left:16px;">Backups Restore → Approvals</span>
+  </div>
+</main>
+
+</body>
+</html>
