@@ -183,7 +183,7 @@ AGENT_CREDENTIALS={"<token-1>":{"actor":"agent:claude","capabilities":["get_stat
 | `set_firewall`, `set_ingress` | same name | Public-edge resources (v2). Creating one is applied directly; a destructive change (removing rules, swapping an ingress hostname or load balancer) waits for approval. |
 | `set_certificate`, `set_load_balancer`, `set_primary_ip` | same name | **Always** waits for approval (v2) |
 | `expose_service` | same name | Certificate + load balancer + firewall + DNS for one service, behind **one bundled approval** (v2) |
-| `list_approvals`, `approve`, `reject` | none (any valid token) | Approval lifecycle |
+| `list_approvals`, `approve`, `reject` | none (any valid token) | Approval lifecycle. **A token can't resolve an approval its own actor requested** (403). |
 
 Every mutating tool accepts `dry_run: true`, which returns the plan and changes nothing.
 
@@ -193,12 +193,11 @@ Every mutating tool accepts `dry_run: true`, which returns the plan and changes 
 - **Day-to-day operator agent:** the observer set plus `deploy_service`, `scale_service`, `set_dns`, `snapshot`, `apply_manifest`
 - **Full v1 + public edge:** every name in the table above
 
-> ⚠️ **Known limitation: approval is not separation of duties yet.** Any valid token can approve or reject any pending request, **including one its own actor created**. The bridge also exposes `approve` to the agent. Every resolution is audited with the resolver's actor, but nothing in v1 stops an agent from approving itself.
+> **Separation of duties.** The server refuses (HTTP 403) any attempt by an actor to approve or reject an approval it requested itself, and the request stays pending. You therefore need **at least two actors**: the agent that asks (`agent:claude`) and a reviewer that approves (`human:you`).
 >
-> Until per-actor approval rights exist:
-> - tell your agent never to call `approve` or `reject`;
-> - approve yourself over REST with a separate human token (step 8);
-> - review `events` regularly.
+> The check compares **actor names**, not tokens. Two tokens that share an actor count as the same party. A reviewer token needs no capabilities to approve.
+>
+> Any *other* actor can still approve. If you run several agents, decide whether they may approve each other's requests. If not, keep `approve` for your human token only, over REST (step 8).
 
 ---
 
@@ -361,6 +360,7 @@ The full manifest schema is in [`docs/manifest-schema-cheatsheet.md`](./docs/man
 | Every tool returns HTTP 401 | `BEVOX_AGENT_TOKEN` doesn't match a key in `AGENT_CREDENTIALS` |
 | A tool returns HTTP 403 | The token is valid but lacks that capability. Add the tool name and restart. |
 | HTTP 401 from Hetzner | `HCLOUD_TOKEN` is wrong, revoked, or read-only |
+| HTTP 403 when approving | The approving token has the same actor as the one that requested it. Approve with a different actor (step 5). |
 | `pending_approval` keeps piling up | Expected for destructive or billable operations. Approve over REST (step 8). |
 | A declared `services[]` entry is rejected | You are in Cloud-API-only mode (`MANAGED_SERVICES=off`) |
 

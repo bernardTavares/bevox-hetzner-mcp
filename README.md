@@ -14,7 +14,7 @@ Claude / any MCP agent ──► MCP bridge ──► REST API ──► Approva
                                                             └──── Postgres: desired / observed state + audit trail
 ```
 
-> **Status: alpha.** v1 and the v2 public-edge block are complete, with 1,403 tests passing (3 skipped). It ran as the infrastructure control plane for a small production cluster (one daemon on the operator's machine, behind Cloudflare Tunnel and Access). In practice some urgent production changes were still made by hand over SSH, so treat it as a working reference design, not a supported product.
+> **Status: alpha.** v1 and the v2 public-edge block are complete, with 1,407 tests passing (3 skipped). It ran as the infrastructure control plane for a small production cluster (one daemon on the operator's machine, behind Cloudflare Tunnel and Access). In practice some urgent production changes were still made by hand over SSH, so treat it as a working reference design, not a supported product.
 
 **→ To install it, configure credentials and connect Claude, read [GETTING-STARTED.md](./GETTING-STARTED.md).**
 
@@ -73,9 +73,9 @@ A **Cloud-API-only mode** (`MANAGED_MESH=off`, `MANAGED_SERVICES=off`) skips SSH
 - **Drift is reported, not corrected.** Changes made outside the tool show up as `drift` events, and you decide what to do.
 - **Secrets are resolved only at apply time.** Manifests reference `secret:<name>`. Values come from a sops/age-encrypted file and never appear in plans, logs, events or tool results. Leak-sentinel tests enforce this.
 - **Capability-scoped tokens.** Every tool call is authorised against the token's capability list and audited with its actor.
+- **Separation of duties.** The actor that requested an approval can never approve or reject it: the server refuses with 403, and the request stays pending. Destructive and billable changes always need a second party, such as a human reviewer token.
 
 **Known limitations (read before production use):**
-- **Self-approval.** Any valid token can approve any pending request, including its own. Approvals are audited, but separation of duties is not enforced yet. Approve with a separate human token, and tell agents not to call `approve`.
 - **Existing infrastructure.** The daemon doesn't backfill state for resources it didn't create. With empty state, `apply_manifest` plans to create everything, so always `dry_run` first.
 - **Single host.** One daemon, no HA. The audit trail lives in Postgres, so back it up.
 
@@ -110,7 +110,7 @@ docker run -d --name hmcp-test-pg -e POSTGRES_USER=core -e POSTGRES_PASSWORD=cor
 cp core/.env.example core/.env     # set DATABASE_URL_TEST=postgres://core:core@localhost:5546/bevox_core_test
 npm --prefix core install && npm --prefix console install   # core's typecheck also checks the console contract
 npm --prefix core run typecheck
-npm --prefix core test             # 1,403 passing, 3 skipped (@live tests need real Hetzner tokens)
+npm --prefix core test             # 1,407 passing, 3 skipped (@live tests need real Hetzner tokens)
 ```
 
 Tests never touch real infrastructure: Hetzner, Docker, SSH and restic all run behind fakes. See [CONTRIBUTING.md](./CONTRIBUTING.md) for the workflow (spec first, TDD, idempotency property tests) and [SECURITY.md](./SECURITY.md) for reporting vulnerabilities.

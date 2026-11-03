@@ -65,6 +65,13 @@ Two — and only two — paths transition a pending out of `pending`:
 Both paths emit a `StateEvent` capturing the actor; per CONTRIBUTING #5, no
 mutation is anonymous.
 
+**Separation of duties (spec `2026-11-03-approval-separation-of-duties`).**
+The webhook path refuses (`ReconcileError("fatal")` → REST 403) when the
+resolver is the same actor that requested the approval — for approve AND
+reject. Checked after the terminal short-circuit (idempotency unchanged) and
+before any write (no UPDATE, no event; the record stays `pending`). Tests that
+exercise resolution must use a reviewer actor distinct from the requester.
+
 ## TTL semantics
 
 - **Default TTL: 24 hours** (`DEFAULT_TTL_MS = 24 * 60 * 60 * 1000` in

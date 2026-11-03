@@ -58,7 +58,7 @@ EOF
 
 # Install + verify baseline
 npm --prefix core install
-npm --prefix core test     # expected: 1,403 passing, 3 skipped (@live)
+npm --prefix core test     # expected: 1,407 passing, 3 skipped (@live)
 ```
 
 ### Layout
