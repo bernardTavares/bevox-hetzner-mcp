@@ -99,7 +99,7 @@ function genLoadBalancer(rng: () => number, ordinal: number): LoadBalancer {
     algorithm: pick(rng, ALGORITHMS),
     targets: { label: pick(rng, SELECTOR_LABELS) },
     health_check: genHealthCheck(rng),
-  } as LoadBalancer;
+  } as unknown as LoadBalancer;
 }
 
 // ---------------------------------------------------------------------------

@@ -1,151 +1,128 @@
 # bevox-hetzner-mcp
 
-An **agent-native control plane** for [Hetzner Cloud](https://www.hetzner.com/cloud/).
-Lets AI agents (and humans) provision and operate servers, networks, volumes,
-containers, certificates, load balancers, DNS, and backups through a
-declarative desired-state model exposed as MCP tools and a REST API.
+**An agent-native control plane for [Hetzner Cloud](https://www.hetzner.com/cloud/).** AI agents (and humans) can provision and operate the following through MCP tools or a REST API:
+- servers, networks and volumes;
+- Docker services;
+- firewalls, load balancers, certificates and DNS;
+- backups.
 
-> **Status: alpha (first production deployment shipped).** v1 core
-> (Fases 1–6) + v2 Bloco A (public edge) are complete with 897/898 tests
-> green. A reference deployment runs behind Cloudflare Tunnel + Access on
-> a single host — see [`deploy/README.md`](./deploy/README.md). Durable
-> working state, the operational console UI, and Blocos B/C/D (HA/DR,
-> identity/policy, observability/cost) are on the roadmap.
+Every change goes through a declarative desired-state model, a plan you can inspect, and an approval gate for anything destructive or billable.
+
+```
+Claude / any MCP agent ──► MCP bridge ──► REST API ──► Approval Gate ──► Reconciler ──► Hetzner Cloud · DNS · Docker · WireGuard · restic
+                                                            │                  │
+                                                            └──── Postgres: desired / observed state + audit trail
+```
+
+> **Status: alpha.** v1 and the v2 public-edge block are complete, with 1,403 tests passing (3 skipped). It ran as the infrastructure control plane for a small production cluster (one daemon on the operator's machine, behind Cloudflare Tunnel and Access). In practice some urgent production changes were still made by hand over SSH, so treat it as a working reference design, not a supported product.
+
+**→ To install it, configure credentials and connect Claude, read [GETTING-STARTED.md](./GETTING-STARTED.md).**
+
+---
 
 ## Why this exists
 
-PaaS-style tools (Coolify, Dokku, Kamal, Nomad) target human operators
-through a UI. They do not expose the operations programmatically with the
-fidelity an AI agent needs: declarative desired state, structured plans,
-approval gating with audit, deterministic idempotency, fail-safe drift.
+PaaS tools (Coolify, Dokku, Kamal, Nomad) are built for humans clicking through a UI or running a CLI. An AI agent needs something else:
+- **declarative desired state** it can read and write;
+- **structured plans** it can show you before anything happens;
+- **approval gating** with an audit trail;
+- **deterministic idempotency**, so retrying is always safe;
+- **drift reported, never silently "fixed"**.
 
-`bevox-hetzner-mcp` is a thin **control plane on top of proven primitives**
-(Hetzner Cloud API, Docker, WireGuard, restic). It does not reinvent
-orchestration. It reinvents the *interface for agents*.
+This project doesn't reinvent orchestration. It sits on proven primitives (the Hetzner Cloud API, Docker, WireGuard, restic) and reinvents the **interface for agents**.
 
-## What it gives you
+## How it works
 
-- **Declarative desired state.** Manifest YAML in git, working state in
-  Postgres, observed state re-read from Hetzner every cycle.
-- **Idempotent reconciler.** Observe → Plan → Gate → Apply → Record. Re-running
-  is recovery. Drift is reported, never silently corrected.
-- **Fail-safe.** No failure path deletes a resource the operator did not
-  explicitly request to remove.
-- **MCP server + REST API.** One shared 12-tool catalog (v1) + 7 additional
-  v2 tools for the public edge.
-- **Approval Gate.** Destructive and cost-bearing operations route through a
-  pending-approval lifecycle (TTL, webhook, poll fallback).
-- **Capability-scoped credentials.** Every `StateEvent` records the acting
-  agent and the effective scope.
-- **Secrets never leak.** Resolved only at apply, behind an unforgeable
-  apply-context token, never in plans / logs / observed state.
+1. **Desired state:** a manifest of what you want (servers, services, DNS…) in Postgres, written by tools or by `apply_manifest`.
+2. **Observe:** each cycle re-reads the real state from Hetzner and Docker.
+3. **Plan:** a diff of the desired state against the observed state, with an impact estimate. `dry_run: true` stops here.
+4. **Gate:** destructive or billable operations become `pending_approval` (with a TTL and a webhook or poll).
+5. **Apply → Record:** the change is applied, and an append-only `StateEvent` records the acting agent, its capability scope and the approval.
 
-## Quick start
+Running the loop again is how you recover. No failure path deletes a resource you didn't explicitly ask to remove.
 
-```bash
-git clone https://github.com/bernardTavares/bevox-hetzner-mcp.git
-cd bevox-hetzner-mcp
+## Tools
 
-# Start a disposable Postgres for tests
-docker run -d --name bevox-core-test-pg \
-  -e POSTGRES_USER=core -e POSTGRES_PASSWORD=core -e POSTGRES_DB=bevox_core_test \
-  -p 5546:5432 postgres:16
+| Group | Tools | Approval |
+|---|---|---|
+| Read | `get_state`, `diff`, `events`, `health`, `resolve_selector` | never |
+| Low-risk writes | `set_dns`, `snapshot` | never (audited) |
+| Workloads | `deploy_service`, `scale_service`, `apply_manifest` | only when the plan is destructive or billable |
+| Infrastructure | `provision_server`, `restore`, `destroy` | always |
+| Public edge (v2) | `set_firewall`, `set_ingress` | only when the change is destructive (e.g. a hostname or LB swap) |
+| Edge, always gated (v2) | `set_certificate`, `set_load_balancer`, `set_primary_ip` | always |
+| One-shot exposure (v2) | `expose_service`: certificate + LB + firewall + DNS | one bundled approval |
+| Approvals | `list_approvals`, `approve`, `reject` | — |
 
-# Configure core/.env (template in core/.env.example)
-cp core/.env.example core/.env
-# edit core/.env: set DATABASE_URL_TEST=postgres://core:core@localhost:5546/bevox_core_test
-#                 and (optional) real Hetzner tokens for live operations.
+Each agent gets its own bearer token with an explicit list of the tools it may call. [GETTING-STARTED.md §5](./GETTING-STARTED.md#5-agent-tokens-and-capabilities) has least-privilege recipes.
 
-# Install + run the suite
-npm --prefix core install
-npm --prefix core test   # 897/898 green, 1 @live skipped
-```
+## What you need
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full developer setup.
+| | |
+|---|---|
+| **Hetzner** | A Cloud API token (Read & Write). A DNS API token if you manage DNS. An SSH key uploaded to the project. |
+| **Server** | Linux with Node.js 20.12+ and Postgres 16. `sops` and `age` for app secrets. |
+| **Optional** | A restic repository (backups). Docker on a target host (managed services). Cloudflare Tunnel and Access (remote access). |
+| **Client** | Claude Code, Claude Desktop or any MCP client, through the bundled stdio bridge (`core/bin/mcp-stdio-bridge.mjs`). |
 
-## Architecture (one line per layer)
+A **Cloud-API-only mode** (`MANAGED_MESH=off`, `MANAGED_SERVICES=off`) skips SSH, Docker and WireGuard entirely, for when you run containers yourself (k3s, for example).
 
-```
-Agent (OpenClaw, Vox, Claude Code, custom)
-  └─→ Agent Interface (MCP + REST, capability-scoped)
-        └─→ Approval Gate (TTL, webhook, poll fallback)
-              └─→ State Store (git YAML canonical + Postgres working/observed)
-                    └─→ Reconciler (Observe → Plan → Gate → Apply → Record)
-                          └─→ Providers (HetznerCloud, HetznerDNS, Docker-over-SSH,
-                                          WireGuard, restic + v2: Firewall, LB,
-                                          Certificate, PrimaryIP, Ingress)
-```
+## Safety model
 
-Full design lives in
-[`docs/specs/2026-05-17-bevox-hetzner-mcp-design.md`](./docs/specs/2026-05-17-bevox-hetzner-mcp-design.md)
-(v1) and
-[`docs/specs/2026-05-20-bevox-hetzner-mcp-v2-architecture-contract.md`](./docs/specs/2026-05-20-bevox-hetzner-mcp-v2-architecture-contract.md)
-(v2 contract).
+- **Fail-safe, never fail-deleting.** No error path removes a resource. A partial apply is recorded and converged on the next cycle.
+- **Drift is reported, not corrected.** Changes made outside the tool show up as `drift` events, and you decide what to do.
+- **Secrets are resolved only at apply time.** Manifests reference `secret:<name>`. Values come from a sops/age-encrypted file and never appear in plans, logs, events or tool results. Leak-sentinel tests enforce this.
+- **Capability-scoped tokens.** Every tool call is authorised against the token's capability list and audited with its actor.
 
-## What's in scope (and what's not)
+**Known limitations (read before production use):**
+- **Self-approval.** Any valid token can approve any pending request, including its own. Approvals are audited, but separation of duties is not enforced yet. Approve with a separate human token, and tell agents not to call `approve`.
+- **Existing infrastructure.** The daemon doesn't backfill state for resources it didn't create. With empty state, `apply_manifest` plans to create everything, so always `dry_run` first.
+- **Single host.** One daemon, no HA. The audit trail lives in Postgres, so back it up.
 
-**In scope (v1 + v2 Bloco A, shipped):**
+## Scope
 
-- Hetzner Cloud servers, networks, volumes, firewalls, load balancers,
-  primary IPs, managed/uploaded certificates.
-- Hetzner DNS upsert.
-- Docker containers on a WireGuard private mesh.
-- restic backups (snapshot + approval-gated restore).
-- Public HTTPS ingress (`Ingress` composite: Cert + LB + Firewall + DNS).
-- MCP server + REST API + capability scopes + approval lifecycle.
+**Shipped:**
+- Hetzner Cloud servers, networks, volumes, firewalls, load balancers, primary IPs and managed or uploaded certificates;
+- Hetzner DNS;
+- Docker services over SSH on a WireGuard mesh;
+- restic backups (snapshot, plus a restore that needs approval);
+- the composite HTTPS `Ingress`.
 
-**Out of scope (v1) — planned for later blocos:**
-
-- Multi-cloud (Hetzner only — by design).
-- Multi-tenant, billing, end-user UX.
-- Predictive autoscaling (reactive scaling via `scale_service` is in v1).
-- Rich web UI for end users (an internal operational console exists).
-- Automatic destructive rollback.
-- PolicyEngine (Bloco C), durable cost estimation (Bloco D), HA/DR
-  primitives (Bloco B).
+**Not in scope:** multi-cloud (Hetzner only, by design), multi-tenancy, billing, predictive autoscaling, and automatic destructive rollback. The roadmap blocks are HA/DR, a policy engine and cost/observability.
 
 ## Project layout
 
 ```
-core/      Agent-native control plane (TypeScript, Node 20+)
-console/   Internal operational frontend (React + Vite) — contract oracle today
-deploy/    Production deploy artifacts: systemd units, Docker Compose for
-           Postgres, cloudflared tunnel config, runbook (see deploy/README.md)
-docs/
-  specs/                   Approved design docs
-  superpowers/plans/       Implementation plans (subagent-driven execution)
+core/      The control plane: TypeScript, Node 20+, MCP server, REST API, reconciler, providers
+  bin/     mcp-stdio-bridge.mjs, the zero-dependency bridge your MCP client launches
+console/   Internal operator UI (React + Vite), also the contract oracle for the API
+deploy/    Reference deploy: systemd units, Postgres compose, cloudflared, runbooks
+docs/      Design specs, implementation plans, manifest cheatsheet
 ```
 
-## Stack
+Stack: Node.js 20+, TypeScript 5 (strict, ESM), `@modelcontextprotocol/sdk`, PostgreSQL 16, an in-house Hetzner REST client (no SDK), the Docker Engine API over SSH, WireGuard, restic, sops/age, Zod, Pino, Vitest.
 
-Node.js 20+, TypeScript 5 (ESM `NodeNext`, `strict`), `@modelcontextprotocol/sdk`,
-PostgreSQL 16 (`pg`), Hetzner Cloud REST (in-house client, no SDK dep), Docker
-Engine API over SSH, WireGuard, restic, Zod, Pino, Vitest.
+## Development
 
-## Contributing
+```bash
+docker run -d --name hmcp-test-pg -e POSTGRES_USER=core -e POSTGRES_PASSWORD=core \
+  -e POSTGRES_DB=bevox_core_test -p 5546:5432 postgres:16
+cp core/.env.example core/.env     # set DATABASE_URL_TEST=postgres://core:core@localhost:5546/bevox_core_test
+npm --prefix core install && npm --prefix console install   # core's typecheck also checks the console contract
+npm --prefix core run typecheck
+npm --prefix core test             # 1,403 passing, 3 skipped (@live tests need real Hetzner tokens)
+```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md). Substantive changes start with a
-spec under `docs/specs/`; the test suite is the contract — preserve and
-extend it. TDD, atomic commits, fail-safe by default.
-
-## Security
-
-See [SECURITY.md](./SECURITY.md). Do not file security issues publicly.
+Tests never touch real infrastructure: Hetzner, Docker, SSH and restic all run behind fakes. See [CONTRIBUTING.md](./CONTRIBUTING.md) for the workflow (spec first, TDD, idempotency property tests) and [SECURITY.md](./SECURITY.md) for reporting vulnerabilities.
 
 ## How this was built
 
-Spec-first and AI-native. Every substantive change started as a design spec in
-`docs/specs/` and an implementation plan in `docs/superpowers/plans/`. The plan
-was then executed by Claude Code subagents under repo-local rules, hooks and
-reviewer agents (see `.claude/` and `CLAUDE.md`), with the test suite as the
-contract. The specs and plans were originally written in Portuguese; the code,
-API and this README are in English.
+Spec-first and AI-native. Every substantive change started as a design spec in `docs/specs/` and an implementation plan in `docs/superpowers/plans/`. Claude Code subagents then executed the plan under repo-local rules, hooks and reviewer agents (`.claude/`, `CLAUDE.md`), with the test suite as the contract.
+
+The specs, plans and the manifest cheatsheet were written in Portuguese. The code, the API, this README and the getting-started guide are in English.
 
 ## License
 
-[Functional Source License 1.1, MIT Future License](./LICENSE.md) (FSL-1.1-MIT).
-Copyright 2026 Bernard Tavares.
+[Functional Source License 1.1, MIT Future License](./LICENSE.md) (FSL-1.1-MIT). Copyright 2026 Bernard Tavares.
 
-You can use, modify and redistribute it for any purpose except a competing
-commercial product or service. Each version automatically becomes MIT-licensed
-two years after its release.
+You may use, modify and redistribute it for any purpose except a competing commercial product or service. Each version becomes MIT-licensed two years after its release.

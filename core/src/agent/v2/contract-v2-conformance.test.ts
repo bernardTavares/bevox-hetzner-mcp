@@ -1087,7 +1087,7 @@ describe("Task F4.5 — REST contract-v2 conformance for /api/v2/load-balancers"
     expect(env.status).toBe("pending_approval");
     expect(env.approval_id).toBeDefined();
     expect(env.plan).toBeDefined();
-    const ops = env.plan!.ops as ReadonlyArray<{
+    const ops = env.plan!.ops as unknown as ReadonlyArray<{
       op: string;
       entity: string;
       impact?: string;

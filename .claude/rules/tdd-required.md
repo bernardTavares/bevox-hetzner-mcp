@@ -106,7 +106,7 @@ intended behavior (fix the assertion, not the production code).
 ```bash
 npm --prefix core run typecheck                      # NodeNext strict; must be clean
 npm --prefix core test -- <path to new test>         # the new test alone
-npm --prefix core test                               # full suite — expected 897/898 green (1 @live skipped)
+npm --prefix core test                               # full suite — expected 1,403 passing, 3 skipped (@live)
 ```
 
 A diff that adds production code in `core/src/**/*.ts` without a
