@@ -272,6 +272,48 @@ describe("resolveApproval(): webhook path", () => {
     expect(rejectedEvents).toHaveLength(0);
   });
 
+  // Separation of duties (spec 2026-11-03-approval-separation-of-duties):
+  // the requester (CTX actor "agent:vox") may never resolve its own approval.
+  it("requester approving its OWN pending approval → fatal, stays pending, no event", async () => {
+    const gate = createApprovalGate({ pool, clock: makeClock(0), idFactory });
+    await gate.evaluate([SENSITIVE], CTX); // apr_test-1 requested by agent:vox
+
+    const err = await gate
+      .resolveApproval("apr_test-1", "approved", "agent:vox")
+      .then(() => undefined, (e: unknown) => e);
+    expect(err).toBeInstanceOf(ReconcileError);
+    expect((err as ReconcileError).errorClass).toBe("fatal");
+
+    const rec = await gate.getApproval("apr_test-1");
+    expect(rec?.status).toBe("pending");
+    expect(await queryEvents(pool, { result: "approved" })).toHaveLength(0);
+    // ...and the item is still withheld on the next cycle.
+    const d = await gate.evaluate([SENSITIVE], CTX);
+    expect(d.denied).toEqual([SENSITIVE]);
+  });
+
+  it("requester rejecting its OWN pending approval → refused the same way", async () => {
+    const gate = createApprovalGate({ pool, clock: makeClock(0), idFactory });
+    await gate.evaluate([SENSITIVE], CTX);
+
+    await expect(
+      gate.resolveApproval("apr_test-1", "rejected", "agent:vox", "nah"),
+    ).rejects.toBeInstanceOf(ReconcileError);
+    expect((await gate.getApproval("apr_test-1"))?.status).toBe("pending");
+    expect(await queryEvents(pool, { result: "rejected" })).toHaveLength(0);
+  });
+
+  it("requester resolving an ALREADY-TERMINAL approval → idempotent no-op (unchanged)", async () => {
+    const gate = createApprovalGate({ pool, clock: makeClock(0), idFactory });
+    await gate.evaluate([SENSITIVE], CTX);
+    await gate.resolveApproval("apr_test-1", "approved", "agent:human");
+
+    const again = await gate.resolveApproval("apr_test-1", "approved", "agent:vox");
+    expect(again.status).toBe("approved");
+    expect(again.resolver).toBe("agent:human");
+    expect(await queryEvents(pool, { result: "approved" })).toHaveLength(1);
+  });
+
   it("unknown id → precondition; blank resolver → precondition", async () => {
     const gate = createApprovalGate({ pool, clock: makeClock(0), idFactory });
     await gate.evaluate([SENSITIVE], CTX);

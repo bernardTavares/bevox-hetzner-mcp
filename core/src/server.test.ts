@@ -726,6 +726,9 @@ describe("Task 23 — server.ts advertises the v2 tool surface on MCP (gap fix)"
       ...envFor(),
       AGENT_CREDENTIALS: JSON.stringify({
         "tok-kube": { actor: "agent:vox", capabilities: ["kubectl_apply"] },
+        // Distinct reviewer: the requester may not resolve its own approval
+        // (spec 2026-11-03-approval-separation-of-duties).
+        "tok-reviewer": { actor: "human:reviewer", capabilities: [] },
       }),
     };
     const srv = await createServer(
@@ -796,7 +799,7 @@ describe("Task 23 — server.ts advertises the v2 tool surface on MCP (gap fix)"
       const approveReq = new FakeReq(
         "POST",
         `/api/approvals/${first.approval_id}/approve`,
-        { authorization: "Bearer tok-kube" },
+        { authorization: "Bearer tok-reviewer" },
         {},
       );
       const approveRes = new FakeRes();

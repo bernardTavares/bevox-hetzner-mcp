@@ -346,6 +346,9 @@ function observedAdapter(slice: ObservedSlice): State {
 }
 
 const TOKEN = "tok-vox";
+// A distinct reviewer actor: approvals must be resolved by someone other than
+// the requester (spec 2026-11-03-approval-separation-of-duties).
+const REVIEWER_TOKEN = "tok-reviewer";
 
 function makeServer(opts?: {
   desiredByScope?: Map<string, DesiredState>;
@@ -393,6 +396,7 @@ function makeServer(opts?: {
   const credentials = createInjectedCredentialStore({
     [TOKEN]: { actor: "agent:vox", capabilities: [...ALL_TOOLS] },
     "tok-empty": { actor: "agent:weak", capabilities: [] },
+    [REVIEWER_TOKEN]: { actor: "human:reviewer", capabilities: [] },
   });
   const rest = createRestServer({ catalog, credentials, approvalGate: gate });
   return { rest };
@@ -817,6 +821,7 @@ describe("approvals endpoints (4.3 webhook/poll path)", () => {
     const r = await call(rest, {
       method: "POST",
       url: `/api/approvals/${encodeURIComponent(id)}/approve`,
+      token: REVIEWER_TOKEN,
       body: {},
     });
     expect(r.status).toBe(200);
@@ -833,13 +838,13 @@ describe("approvals endpoints (4.3 webhook/poll path)", () => {
       body: { entity: "server:audit-1" },
     });
     const id = (d.body as { approval_id: string }).approval_id;
-    // Authenticate as agent:vox but include misleading body actor/resolver
+    // Authenticate as human:reviewer but include misleading body actor/resolver
     // fields — they MUST be ignored; the recorded resolver is the verified
     // credential's actor via the brand-guarded actorOf.
     const r = await call(rest, {
       method: "POST",
       url: `/api/approvals/${encodeURIComponent(id)}/approve`,
-      token: TOKEN, // resolves to actor "agent:vox"
+      token: REVIEWER_TOKEN, // resolves to actor "human:reviewer"
       body: { actor: "agent:attacker", resolver: "agent:attacker" },
     });
     expect(r.status).toBe(200);
@@ -849,8 +854,33 @@ describe("approvals endpoints (4.3 webhook/poll path)", () => {
       "SELECT resolver FROM approvals WHERE id = $1",
       [id],
     );
-    expect(row.rows[0]!.resolver).toBe("agent:vox");
+    expect(row.rows[0]!.resolver).toBe("human:reviewer");
     expect(row.rows[0]!.resolver).not.toBe("agent:attacker");
+  });
+
+  it("requester approving its OWN approval → 403, approval stays pending (separation of duties)", async () => {
+    const { rest } = makeServer();
+    const d = await call(rest, {
+      method: "POST",
+      url: "/api/destroy",
+      body: { entity: "server:self-1" },
+    }); // requested by agent:vox (TOKEN)
+    const id = (d.body as { approval_id: string }).approval_id;
+    for (const verb of ["approve", "reject"]) {
+      const r = await call(rest, {
+        method: "POST",
+        url: `/api/approvals/${encodeURIComponent(id)}/${verb}`,
+        token: TOKEN,
+        body: {},
+      });
+      expect(r.status).toBe(403);
+    }
+    const row = await pool.query<{ status: string; resolver: string | null }>(
+      "SELECT status, resolver FROM approvals WHERE id = $1",
+      [id],
+    );
+    expect(row.rows[0]!.status).toBe("pending");
+    expect(row.rows[0]!.resolver).toBeNull();
   });
 
   it("POST /api/approvals/:id/reject → rejected (cancelled→rejected projection)", async () => {
@@ -864,6 +894,7 @@ describe("approvals endpoints (4.3 webhook/poll path)", () => {
     const r = await call(rest, {
       method: "POST",
       url: `/api/approvals/${encodeURIComponent(id)}/reject`,
+      token: REVIEWER_TOKEN,
       body: { reason: "not now" },
     });
     expect(r.status).toBe(200);

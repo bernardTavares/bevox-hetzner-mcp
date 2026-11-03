@@ -457,6 +457,18 @@ export function createApprovalGate(deps: ApprovalGateDeps): ApprovalGate {
     if (existing.status !== "pending") {
       return existing;
     }
+    // SEPARATION OF DUTIES (spec 2026-11-03-approval-separation-of-duties): the
+    // actor that requested an approval may never resolve it (approve OR
+    // reject). Refused as `fatal` (authz → REST 403) BEFORE any write: no
+    // UPDATE, no StateEvent, the record stays `pending`. Placed after the
+    // terminal short-circuit so idempotent re-resolution is unchanged.
+    if (resolver === existing.actor) {
+      throw new ReconcileError(
+        "fatal",
+        "resolveApproval: an approval cannot be resolved by the actor that requested it (separation of duties)",
+        { entity: id },
+      );
+    }
 
     // pending → approved | (rejected→) cancelled. Per the plan a rejection is
     // terminal `cancelled` with the reason recorded; an approval is terminal
