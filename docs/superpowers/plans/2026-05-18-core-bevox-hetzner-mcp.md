@@ -14,7 +14,7 @@
 
 This is a **single master plan covering Fases 1–6**, but it is **executed phase by phase**. Each `Fase N` section is self-contained and **produces working, testable software on its own** — the spec mandates incremental build (`docs/specs/2026-05-17-bevox-hetzner-mcp-design.md` §"Fases internas"). Do not start Fase N+1 until Fase N's "Done =" definition holds and CI is green. `Task 0` is a blocking gate before Fase 1.
 
-New `core/` sub-package, sibling to `console/`. All paths below are relative to repo root ``.
+New `core/` sub-package, sibling to `console/`. All paths below are relative to the repository root.
 
 ### Working agreement (all tasks)
 
