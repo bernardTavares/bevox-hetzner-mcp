@@ -1,5 +1,11 @@
 # bevox-hetzner-mcp
 
+[![tests](https://img.shields.io/badge/tests-1%2C407%20core%20%2B%20308%20console-brightgreen)](#) [![license](https://img.shields.io/badge/license-FSL--1.1--MIT-blue)](./LICENSE.md) ![language](https://img.shields.io/github/languages/top/bernardTavares/bevox-hetzner-mcp) ![status](https://img.shields.io/badge/status-alpha-orange)
+
+![bevox-hetzner-mcp](docs/assets/social-card.png)
+
+> Part of the [4-layer AI-first company series](https://github.com/bernardTavares). License: FSL-1.1-MIT (source-available, converts to MIT after 2 years)
+
 **An agent-native control plane for [Hetzner Cloud](https://www.hetzner.com/cloud/).** AI agents (and humans) can provision and operate the following through MCP tools or a REST API:
 - servers, networks and volumes;
 - Docker services;
