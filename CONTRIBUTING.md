@@ -100,7 +100,7 @@ docs/
 5. **Open a PR** against `main` (`feat/core` was the original integration
    branch and is now merged). Reference the issue / spec / plan in the body.
    Fill in the test plan.
-6. **CI must pass** (when CI exists — see TODO below). Locally:
+6. **Run the test suite locally** (see README); there is no CI yet:
    - `npm --prefix core test` — full suite green.
    - `npm --prefix core run typecheck` — clean.
 
