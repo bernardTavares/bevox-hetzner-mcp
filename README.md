@@ -146,7 +146,7 @@ flowchart LR
   subgraph INFRA["Infrastructure and product"]
     direction TB
     HZ["bevox-hetzner-mcp<br/>agent-native Hetzner control plane"]
-    H["bevox-agent-harness<br/>product agent runtime · private"]
+    H["bevox-agent-harness<br/>product agent runtime"]
     MA["bevox-meta-api<br/>WhatsApp/Instagram gateway on k3s"]
   end
   BP -->|delegates to| COS
@@ -173,7 +173,7 @@ flowchart LR
 | [bevox-blueprint](https://github.com/bernardTavares/bevox-blueprint) | Management layer: 63 Claude Code agents, org chart, RACI, OKRs | company-os |
 | [bevox-hetzner-mcp](https://github.com/bernardTavares/bevox-hetzner-mcp) | MCP server + REST control plane for Hetzner Cloud with an approval gate | built to host the agent harness; manages meta-api's k3s |
 | [bevox-meta-api](https://github.com/bernardTavares/bevox-meta-api) | Multi-tenant WhatsApp/Instagram gateway that ran in production on k3s | hetzner-mcp |
-| bevox-agent-harness (private for now) | The product's agent runtime. It never carried production traffic. | hetzner-mcp |
+| [bevox-agent-harness](https://github.com/bernardTavares/bevox-agent-harness) | The product's agent runtime: per-step reasoning escalation, token-budgeted context, fail-closed permissions, evals, MCP | hetzner-mcp |
 
 ## License
 
