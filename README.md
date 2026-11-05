@@ -69,7 +69,7 @@ Each agent gets its own bearer token with an explicit list of the tools it may c
 | **Hetzner** | A Cloud API token (Read & Write). A DNS API token if you manage DNS. An SSH key uploaded to the project. |
 | **Server** | Linux with Node.js 20.12+ and Postgres 16. `sops` and `age` for app secrets. |
 | **Optional** | A restic repository (backups). Docker on a target host (managed services). Cloudflare Tunnel and Access (remote access). |
-| **Client** | Claude Code, Claude Desktop or any MCP client, through the bundled stdio bridge (`core/bin/mcp-stdio-bridge.mjs`). |
+| **Client** | Claude Code, Claude Desktop or any MCP client, through the bundled stdio bridge (`core/bin/mcp-stdio-bridge.mjs`), run with Node or as the `ghcr.io/bernardtavares/bevox-hetzner-mcp-bridge` image ([setup](./GETTING-STARTED.md#7-reach-the-daemon-from-your-laptop-and-connect-claude)). |
 
 A **Cloud-API-only mode** (`MANAGED_MESH=off`, `MANAGED_SERVICES=off`) skips SSH, Docker and WireGuard entirely, for when you run containers yourself (k3s, for example).
 
@@ -100,7 +100,7 @@ A **Cloud-API-only mode** (`MANAGED_MESH=off`, `MANAGED_SERVICES=off`) skips SSH
 
 ```
 core/      The control plane: TypeScript, Node 20+, MCP server, REST API, reconciler, providers
-  bin/     mcp-stdio-bridge.mjs, the zero-dependency bridge your MCP client launches
+  bin/     mcp-stdio-bridge.mjs, the stdio bridge your MCP client launches (needs only @modelcontextprotocol/sdk)
 console/   Internal operator UI (React + Vite), also the contract oracle for the API
 deploy/    Reference deploy: systemd units, Postgres compose, cloudflared, runbooks
 docs/      Design specs, implementation plans, manifest cheatsheet

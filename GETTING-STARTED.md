@@ -42,7 +42,7 @@ The daemon **refuses to boot** unless every key marked *required* is set and non
 ### Software
 
 - **Server** (where the daemon runs): Linux x86_64, Node.js **20.12+**, Docker (only for the Postgres container below), `sops` and `age`.
-- **Laptop** (where Claude runs): Node.js 20.12+ and a copy of `core/bin/mcp-stdio-bridge.mjs`. It is a single ESM file with no dependencies.
+- **Laptop** (where Claude runs): Node.js 20.12+ and a checkout of this repo with `npm --prefix core install` run, because `core/bin/mcp-stdio-bridge.mjs` is a single ESM file that depends on `@modelcontextprotocol/sdk`. Or skip Node and run the bridge with Docker (see [§7](#7-reach-the-daemon-from-your-laptop-and-connect-claude)).
 
 ---
 
@@ -291,6 +291,23 @@ Behind Cloudflare Access, add `--env BEVOX_CF_ACCESS_CLIENT_ID=… --env BEVOX_C
   }
 }
 ```
+
+**Run the bridge with Docker:** the image `ghcr.io/bernardtavares/bevox-hetzner-mcp-bridge` contains only the bridge and its SDK dependency, not the daemon. The [`bridge-image`](./.github/workflows/bridge-image.yml) workflow publishes it on version tags. `-i` is required because the bridge speaks MCP over stdin/stdout, and `-e NAME` without a value passes the variable through from the `env` block.
+
+```json
+{
+  "mcpServers": {
+    "hetzner": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "BEVOX_AGENT_TOKEN", "-e", "BEVOX_REST_URL",
+               "ghcr.io/bernardtavares/bevox-hetzner-mcp-bridge:latest"],
+      "env": { "BEVOX_REST_URL": "https://your-daemon-url", "BEVOX_AGENT_TOKEN": "<token-1>" }
+    }
+  }
+}
+```
+
+Inside the container, `localhost` is the container itself. To reach an SSH tunnel on your laptop, use `http://host.docker.internal:8787` (Docker Desktop) or add `"--network", "host"` to the args (Linux). Behind Cloudflare Access, add `-e BEVOX_CF_ACCESS_CLIENT_ID -e BEVOX_CF_ACCESS_CLIENT_SECRET` and set both in `env`. To build the image yourself: `docker build -f core/Dockerfile.bridge -t bevox-hetzner-mcp-bridge .` from the repo root.
 
 ---
 

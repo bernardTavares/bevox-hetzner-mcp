@@ -1,0 +1,37 @@
+# syntax=docker/dockerfile:1
+#
+# OCI image for the MCP stdio bridge (core/bin/mcp-stdio-bridge.mjs).
+# The bridge proxies MCP tool calls to a self-hosted bevox-hetzner-mcp daemon's
+# REST API; this image does NOT contain the daemon.
+#
+# Build context: the repository root.
+#   docker build -f core/Dockerfile.bridge -t bevox-hetzner-mcp-bridge .
+# core/Dockerfile.bridge.dockerignore limits the context to the bridge file.
+#
+# Run (stdio, so -i is required):
+#   docker run -i --rm -e BEVOX_AGENT_TOKEN -e BEVOX_REST_URL \
+#     ghcr.io/bernardtavares/bevox-hetzner-mcp-bridge:latest
+
+FROM node:20-alpine
+
+LABEL io.modelcontextprotocol.server.name="io.github.bernardTavares/bevox-hetzner-mcp" \
+      org.opencontainers.image.title="bevox-hetzner-mcp-bridge" \
+      org.opencontainers.image.description="MCP stdio bridge to a self-hosted bevox-hetzner-mcp daemon" \
+      org.opencontainers.image.source="https://github.com/bernardTavares/bevox-hetzner-mcp" \
+      org.opencontainers.image.licenses="FSL-1.1-MIT"
+
+ENV NODE_ENV=production
+
+WORKDIR /app
+
+# The bridge's only runtime dependency, pinned to the version core/ uses.
+ARG MCP_SDK_VERSION=1.29.0
+RUN echo '{"name":"bevox-hetzner-mcp-bridge","private":true,"type":"module"}' > package.json \
+ && npm install --omit=dev --no-audit --no-fund --save-exact "@modelcontextprotocol/sdk@${MCP_SDK_VERSION}" \
+ && npm cache clean --force
+
+COPY core/bin/mcp-stdio-bridge.mjs /app/mcp-stdio-bridge.mjs
+
+USER node
+
+ENTRYPOINT ["node", "/app/mcp-stdio-bridge.mjs"]

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.bernardTavares/bevox-hetzner-mcp",
+  "title": "bevox-hetzner-mcp",
+  "description": "Stdio bridge to a self-hosted bevox-hetzner-mcp daemon for governed Hetzner Cloud operations",
+  "repository": {
+    "url": "https://github.com/bernardTavares/bevox-hetzner-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/bernardtavares/bevox-hetzner-mcp-bridge:0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "BEVOX_AGENT_TOKEN",
+          "description": "Agent bearer token from the daemon's AGENT_CREDENTIALS",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "BEVOX_REST_URL",
+          "description": "REST root of the self-hosted daemon",
+          "default": "http://localhost:8787"
+        },
+        {
+          "name": "BEVOX_CF_ACCESS_CLIENT_ID",
+          "description": "Cloudflare Access service-token client id, only if the daemon is behind Access"
+        },
+        {
+          "name": "BEVOX_CF_ACCESS_CLIENT_SECRET",
+          "description": "Cloudflare Access service-token secret, set together with the client id",
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
