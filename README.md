@@ -4,7 +4,7 @@
 
 ![bevox-hetzner-mcp](docs/assets/social-card.png)
 
-> Part of the [4-layer AI-first company series](https://github.com/bernardTavares). License: FSL-1.1-MIT (source-available, converts to MIT after 2 years)
+> Part of the [4-layer AI-first company series](https://github.com/bernardTavares) ([how the repos fit together](#how-the-repos-fit-together)). License: FSL-1.1-MIT (source-available, converts to MIT after 2 years)
 
 **An agent-native control plane for [Hetzner Cloud](https://www.hetzner.com/cloud/).** AI agents (and humans) can provision and operate the following through MCP tools or a REST API:
 - servers, networks and volumes;
@@ -126,6 +126,54 @@ Tests never touch real infrastructure: Hetzner, Docker, SSH and restic all run b
 Spec-first and AI-native. Every substantive change started as a design spec in `docs/specs/` and an implementation plan in `docs/superpowers/plans/`. Claude Code subagents then executed the plan under repo-local rules, hooks and reviewer agents (`.claude/`, `CLAUDE.md`), with the test suite as the contract.
 
 The specs, plans and the manifest cheatsheet were written in Portuguese. The code, the API, this README and the getting-started guide are in English.
+
+## How the repos fit together
+
+This repo is one piece of Bevox's public code. The repos form two systems: the **Company OS**, which ran Bevox's internal operations on one host on top of OpenClaw, and the **infrastructure** the product was built to run on.
+
+```mermaid
+flowchart LR
+  subgraph OPS["Company OS · internal operations, one host"]
+    direction TB
+    BP["bevox-blueprint<br/>management layer: 63 agents, org chart"]
+    RT["bevox-openclaw-runtime<br/>OpenClaw gateway, agents, cron, systemd"]
+    COS["bevox-company-os<br/>kanban · dispatcher · tester"]
+    MC["bevox-mission-control<br/>read-only console"]
+    KS["bevox-knowledge-sync<br/>KB watcher · Telegram approvals"]
+    KC["bevox-knowledge-contribute<br/>Claude Code skill: drafts into the KB"]
+    KB[("knowledge repo<br/>PRDs · ADRs · specs")]
+  end
+  subgraph INFRA["Infrastructure and product"]
+    direction TB
+    HZ["bevox-hetzner-mcp<br/>agent-native Hetzner control plane"]
+    H["bevox-agent-harness<br/>product agent runtime · private"]
+    MA["bevox-meta-api<br/>WhatsApp/Instagram gateway on k3s"]
+  end
+  BP -->|delegates to| COS
+  COS -->|runs on| RT
+  KS -->|plugins loaded by| RT
+  KC -->|drafts| KB
+  KS -->|watches · approves| KB
+  KB -->|plans and specs| COS
+  COS -->|state files| MC
+  KS -->|state| MC
+  HZ -->|built to host| H
+  HZ -->|kubectl_apply on k3s| MA
+  classDef here stroke:#f59e0b,stroke-width:4px
+  class HZ here
+```
+
+| Repo | Role | Runs with |
+|---|---|---|
+| [bevox-openclaw-runtime](https://github.com/bernardTavares/bevox-openclaw-runtime) | OpenClaw gateway config, agents (Vox + local Qwen), cron jobs, systemd units | everything in the Company OS runs on it |
+| [bevox-company-os](https://github.com/bernardTavares/bevox-company-os) | Supervised agents: plan → kanban → headless Claude Code → tester → Telegram | runtime, mission-control, knowledge-sync |
+| [bevox-mission-control](https://github.com/bernardTavares/bevox-mission-control) | Read-only web console over the Company OS state (fork of TenacitOS) | company-os, knowledge-sync |
+| [bevox-knowledge-sync](https://github.com/bernardTavares/bevox-knowledge-sync) | Knowledge-repo watcher + OpenClaw plugins for approvals on Telegram | runtime, knowledge-contribute |
+| [bevox-knowledge-contribute](https://github.com/bernardTavares/bevox-knowledge-contribute) | Claude Code skill that writes PRDs, ADRs and specs as draft branches | knowledge-sync |
+| [bevox-blueprint](https://github.com/bernardTavares/bevox-blueprint) | Management layer: 63 Claude Code agents, org chart, RACI, OKRs | company-os |
+| [bevox-hetzner-mcp](https://github.com/bernardTavares/bevox-hetzner-mcp) | MCP server + REST control plane for Hetzner Cloud with an approval gate | built to host the agent harness; manages meta-api's k3s |
+| [bevox-meta-api](https://github.com/bernardTavares/bevox-meta-api) | Multi-tenant WhatsApp/Instagram gateway that ran in production on k3s | hetzner-mcp |
+| bevox-agent-harness (private for now) | The product's agent runtime. It never carried production traffic. | hetzner-mcp |
 
 ## License
 
