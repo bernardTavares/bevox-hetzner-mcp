@@ -148,6 +148,7 @@ flowchart LR
     HZ["bevox-hetzner-mcp<br/>agent-native Hetzner control plane"]
     H["bevox-agent-harness<br/>product agent runtime"]
     MA["bevox-meta-api<br/>WhatsApp/Instagram gateway on k3s"]
+    BE["bevox-backend<br/>control plane: autonomy, approvals, payments"]
   end
   BP -->|delegates to| COS
   COS -->|runs on| RT
@@ -159,6 +160,8 @@ flowchart LR
   KS -->|state| MC
   HZ -->|built to host| H
   HZ -->|kubectl_apply on k3s| MA
+  MA -->|inbound messages| BE
+  BE -->|dispatches turns| H
   classDef here stroke:#f59e0b,stroke-width:4px
   class HZ here
 ```
@@ -173,7 +176,8 @@ flowchart LR
 | [bevox-blueprint](https://github.com/bernardTavares/bevox-blueprint) | Management layer: 63 Claude Code agents, org chart, RACI, OKRs | company-os |
 | [bevox-hetzner-mcp](https://github.com/bernardTavares/bevox-hetzner-mcp) | MCP server + REST control plane for Hetzner Cloud with an approval gate | built to host the agent harness; manages meta-api's k3s |
 | [bevox-meta-api](https://github.com/bernardTavares/bevox-meta-api) | Multi-tenant WhatsApp/Instagram gateway that ran in production on k3s | hetzner-mcp |
-| [bevox-agent-harness](https://github.com/bernardTavares/bevox-agent-harness) | The product's agent runtime: per-step reasoning escalation, token-budgeted context, fail-closed permissions, evals, MCP | hetzner-mcp |
+| [bevox-agent-harness](https://github.com/bernardTavares/bevox-agent-harness) | The product's agent runtime: per-step reasoning escalation, token-budgeted context, fail-closed permissions, evals, MCP | bevox-backend, hetzner-mcp |
+| [bevox-backend](https://github.com/bernardTavares/bevox-backend) | The product's control plane: burst intake, autonomy modes, human approvals, Pix/Stripe payments, calendar | agent-harness, meta-api |
 
 ## License
 
